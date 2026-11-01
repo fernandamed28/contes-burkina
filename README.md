@@ -23,7 +23,7 @@ npm run dev
    ```json
    { "yennenga": { "moore": "yennenga/moore.mp3" } }
    ```
-3. Pousser sur `main` : le site est redéployé automatiquement.
+3. Publier avec `npm run deploy` (construit le site et le pousse sur la branche `gh-pages`).
 
 ## Ajouter un récit
 Ajouter une entrée dans `src/data/contes.js` (texte découpé en scènes, décor, personnages, choix éventuels).
