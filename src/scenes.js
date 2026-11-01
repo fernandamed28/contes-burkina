@@ -167,6 +167,12 @@ const acteurs = {
     `<path d="M-50 -36 Q-46 -62 -10 -62 Q0 -76 12 -62 L36 -60 Q50 -66 60 -56 Q62 -46 52 -40 L36 -32 Q-30 -26 -50 -36Z"/>
      <path d="M50 -62 Q46 -78 56 -84 M58 -62 Q62 -78 72 -80" stroke="currentColor" stroke-width="3" fill="none"/>
      <path class="leg" d="M-40 -34 L-42 0 M-26 -32 L-24 0 M22 -32 L20 0 M34 -34 L38 0" stroke="currentColor" stroke-width="5"/>`,
+  antilope: () =>
+    `<path d="M-40 -46 Q-38 -64 -8 -64 Q14 -64 26 -58 L38 -78 Q44 -84 52 -80 L56 -72 L44 -52 Q38 -44 26 -44 L-30 -42 Q-42 -40 -40 -46Z"/>
+     <path d="M44 -82 Q36 -104 22 -116 M50 -82 Q46 -104 34 -118" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <circle cx="47" cy="-74" r="2.4" fill="#f3e3b8"/>
+     <path class="leg" d="M-32 -44 L-36 0 M-20 -44 L-18 0 M18 -46 L14 0 M28 -46 L32 0" stroke="currentColor" stroke-width="3.5"/>
+     <path d="M-40 -50 Q-50 -48 -48 -36" stroke="currentColor" stroke-width="3" fill="none"/>`,
   oiseau: () => `<g transform="translate(0 -230)"><path class="wing" d="M-18 0 Q-9 -10 0 0 Q9 -10 18 0" stroke="currentColor" stroke-width="3" fill="none"/></g>`,
   masque: () =>
     `<g fill="#3d5a2a">
