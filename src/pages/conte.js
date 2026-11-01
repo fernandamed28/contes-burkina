@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { getConte, CONTES, CATEGORIES, LANGUES } from '../data/contes.js';
 import { renderScene, animateScene, killScene } from '../scenes.js';
 import {
-  chargerManifest, enregistrement, jouerEnregistrement, pauseEnregistrement, progressionEnregistrement,
+  chargerManifest, enregistrement, languesEnregistrees, jouerEnregistrement, pauseEnregistrement, progressionEnregistrement,
   arreterNarration, lireTexte, syntheseDisponible,
 } from '../audio.js';
 
@@ -276,7 +276,10 @@ export async function pageConte(app, [id]) {
     termine = true;
     majProgression();
     const fin = $('#fin');
-    const autres = CONTES.filter((c) => c.id !== conte.id).sort(() => Math.random() - 0.5).slice(0, 3);
+    const autres = [
+      ...CONTES.filter((c) => c.alaune && c.id !== conte.id),
+      ...CONTES.filter((c) => !c.alaune && c.id !== conte.id).sort(() => Math.random() - 0.5),
+    ].slice(0, 3);
     const rang = CONTES.findIndex((c) => c.id === conte.id);
     const prochain = CONTES[(rang + 1) % CONTES.length];
     const nbChoix = parcours.filter((p) => scenes[p].choix).length;
@@ -347,15 +350,23 @@ export async function pageConte(app, [id]) {
   };
 }
 
-export function carteConte(c) {
+export function carteConte(c, { grand = false } = {}) {
   const cat = CATEGORIES[c.categorie];
-  return `<a class="carte-conte" href="#/conte/${c.id}" style="--c:${cat.couleur}">
-    <div class="vignette">${renderScene({ ...c.scenes[0], acteurs: c.scenes[0].acteurs?.map((a) => ({ ...a, x: a.x >= 0 && a.x <= 800 ? a.x : a.vers, vers: undefined })) })}</div>
+  const voix = languesEnregistrees(c.id);
+  return `<a class="carte-conte${grand ? ' grand' : ''}${c.alaune ? ' une' : ''}" href="#/conte/${c.id}" style="--c:${cat.couleur}">
+    <div class="vignette">${vignette(c)}</div>
     <div class="carte-corps">
-      <span class="badge" style="--c:${cat.couleur}">${cat.icone} ${cat.label}</span>
+      <div class="badges"><span class="badge" style="--c:${cat.couleur}">${cat.icone} ${cat.label}</span>${c.alaune ? '<span class="badge-une">★ À la une</span>' : ''}</div>
       <h3>${c.titre}</h3>
       <p class="meta">${c.lieu} · ${c.peuple}</p>
+      ${voix.length ? `<p class="voix">🎧 Raconté en ${voix.map((l) => LANGUES[l]).join(' et ')}</p>` : ''}
       <p>${c.resume}</p>
     </div>
   </a>`;
+}
+
+// Vignette fixe d'un récit : sa première scène, ou la scène emblématique du récit à la une
+function vignette(c) {
+  const s = c.scenes[c.alaune ? 1 : 0];
+  return renderScene({ ...s, acteurs: s.acteurs?.map((a) => ({ ...a, x: a.x >= 0 && a.x <= 800 ? a.x : a.vers, vers: undefined })) });
 }

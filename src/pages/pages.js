@@ -1,11 +1,36 @@
 // Pages simples : accueil, bibliothèque, participer, à propos.
 import { gsap } from 'gsap';
-import { CONTES, CATEGORIES, LANGUES } from '../data/contes.js';
+import { CONTES, CATEGORIES, LANGUES, CONTE_UNE } from '../data/contes.js';
 import { renderScene, animateScene } from '../scenes.js';
 import { carteConte } from './conte.js';
-import { demarrerAmbiance, ambianceActive } from '../audio.js';
+import { demarrerAmbiance, ambianceActive, chargerManifest, languesEnregistrees } from '../audio.js';
 
-export function pageAccueil(app) {
+function blocUne() {
+  const c = CONTE_UNE;
+  const voix = languesEnregistrees(c.id);
+  const attendues = c.langues.filter((l) => !voix.includes(l));
+  return `
+  <section class="une-section" aria-labelledby="titreUne">
+    <div class="une-scene" id="uneScene" aria-hidden="true"></div>
+    <div class="une-contenu">
+      <p class="sur-titre">★ Récit à la une</p>
+      <h2 id="titreUne">${c.titre}</h2>
+      <p class="meta">${CATEGORIES[c.categorie].label} · ${c.peuple} · ${c.lieu} (${c.region})</p>
+      <p>${c.resume}</p>
+      <div class="une-voix">
+        ${voix.map((l) => `<span class="voix-ok">🎧 ${LANGUES[l]}</span>`).join('')}
+        ${attendues.map((l) => `<span class="voix-attente">${LANGUES[l]} bientôt</span>`).join('')}
+      </div>
+      <div class="actions">
+        <a class="btn grand" href="#/conte/${c.id}">▶ Écouter le récit</a>
+        <a class="btn ghost" href="#/carte/${c.id}">◎ Sur la carte</a>
+      </div>
+    </div>
+  </section>`;
+}
+
+export async function pageAccueil(app) {
+  await chargerManifest();
   const regions = new Set(CONTES.map((c) => c.region)).size;
   const langues = Object.keys(LANGUES).length - 1;
   app.innerHTML = `
@@ -20,6 +45,7 @@ export function pageAccueil(app) {
         <button class="btn grand" id="entrer">Entrer dans la veillée ♪</button>
         <a class="btn ghost grand" href="#/carte">Ouvrir la carte</a>
       </div>
+      <a class="hero-une" href="#/conte/${CONTE_UNE.id}"><span>★ À la une</span> ${CONTE_UNE.titre}, raconté en ${languesEnregistrees(CONTE_UNE.id).map((l) => LANGUES[l]).join(' et ') || 'français'} →</a>
     </div>
   </section>
 
@@ -30,6 +56,8 @@ export function pageAccueil(app) {
     <div><strong>${CONTES.filter((c) => c.scenes.some((s) => s.choix)).length}</strong><span>récits interactifs</span></div>
   </section>
 
+  ${blocUne()}
+
   <section class="page">
     <div class="trois">
       <a class="pilier" href="#/carte"><span class="pilier-ico">◎</span><h2>Une carte vivante</h2><p>Explore le Burkina Faso en 2D ou en 3D. Chaque point est un récit, placé là où on le raconte.</p></a>
@@ -37,7 +65,7 @@ export function pageAccueil(app) {
       <a class="pilier" href="#/conte/soamba-katr"><span class="pilier-ico">✦</span><h2>Une histoire dont tu choisis la suite</h2><p>Des illustrations animées et des choix à faire : à toi d'aider Soamba le lièvre à tromper Katr la hyène.</p></a>
     </div>
     <h2 class="section-titre">À découvrir ce soir</h2>
-    <div class="cartes">${CONTES.slice(0, 3).map(carteConte).join('')}</div>
+    <div class="cartes">${CONTES.filter((c) => !c.alaune).slice(0, 3).map((c) => carteConte(c)).join('')}</div>
     <p class="centre"><a class="btn ghost" href="#/bibliotheque">Voir tous les récits →</a></p>
   </section>`;
 
@@ -49,6 +77,9 @@ export function pageAccueil(app) {
     acteurs: [{ t: 'griot', x: 500 }, { t: 'foule', x: 640 }],
   });
   animateScene(hero);
+  const uneScene = app.querySelector('#uneScene');
+  uneScene.innerHTML = renderScene(CONTE_UNE.scenes[1]);
+  animateScene(uneScene);
   gsap.from('.hero-contenu > *', { opacity: 0, y: 24, stagger: 0.12, duration: 0.9, ease: 'power3.out' });
   gsap.from('.chiffres > div', { opacity: 0, y: 20, stagger: 0.1, delay: 0.6 });
 
@@ -58,7 +89,8 @@ export function pageAccueil(app) {
   });
 }
 
-export function pageBibliotheque(app) {
+export async function pageBibliotheque(app) {
+  await chargerManifest();
   app.innerHTML = `
   <section class="page">
     <h1>Bibliothèque des récits</h1>
@@ -79,7 +111,9 @@ export function pageBibliotheque(app) {
     const res = CONTES.filter(
       (c) => (!cat || c.categorie === cat) && (!q || [c.titre, c.peuple, c.lieu, c.region, c.resume].join(' ').toLowerCase().includes(q)),
     );
-    grille.innerHTML = res.length ? res.map(carteConte).join('') : '<p class="muted">Aucun récit ne correspond à ta recherche.</p>';
+    grille.innerHTML = res.length
+      ? res.map((c) => carteConte(c, { grand: c.alaune && !q && !cat })).join('')
+      : '<p class="muted">Aucun récit ne correspond à ta recherche.</p>';
     gsap.from(grille.children, { opacity: 0, y: 16, stagger: 0.05, duration: 0.4 });
   };
   app.querySelector('#q').addEventListener('input', maj);
@@ -93,10 +127,23 @@ export function pageBibliotheque(app) {
   maj();
 }
 
-export function pageParticiper(app) {
+export async function pageParticiper(app) {
+  await chargerManifest();
+  const une = CONTE_UNE;
+  const voix = languesEnregistrees(une.id);
   app.innerHTML = `
   <section class="page etroite">
     <h1>Participer : prête ta voix aux contes</h1>
+    <div class="priorite">
+      <p class="sur-titre">★ Priorité du moment</p>
+      <h2>${une.titre}</h2>
+      <p>C'est notre récit principal : nous voulons l'entendre dans le plus de langues possible. Raconte-le dans la tienne !</p>
+      <ul class="etat-langues">
+        ${une.langues.map((l) => `<li class="${voix.includes(l) ? 'ok' : ''}">${voix.includes(l) ? '✓' : '○'} ${LANGUES[l]}</li>`).join('')}
+      </ul>
+      <p class="muted">Identifiant à utiliser pour le fichier : <code>${une.id}-langue</code> (ex. <code>${une.id}-moore.mp3</code>).</p>
+      <a class="btn" href="#/conte/${une.id}">Lire le récit</a>
+    </div>
     <p>La plateforme ne vit que grâce aux conteurs. Chaque récit peut être enregistré dans les langues nationales : <strong>Mooré, Dioula, Fulfulde, Gulmancema</strong> et d'autres encore.</p>
     <div class="etapes">
       <div><span>1</span><h3>Choisis un récit</h3><p>Lis-le dans la <a href="#/bibliotheque">bibliothèque</a> pour bien connaître l'histoire.</p></div>

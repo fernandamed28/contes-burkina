@@ -480,6 +480,7 @@ export const CONTES = [
 
   {
     id: 'diaba-lompo',
+    alaune: true,
     titre: 'Diaba Lompo, le roi venu du ciel',
     categorie: 'histoire',
     peuple: 'Gulmanceba (Gourmantché)',
@@ -889,6 +890,10 @@ export const CONTES = [
     },
   },
 ];
+
+// Le récit à la une passe en tête de toutes les listes (le tri conserve l'ordre des autres)
+CONTES.sort((a, b) => Number(!!b.alaune) - Number(!!a.alaune));
+export const CONTE_UNE = CONTES.find((c) => c.alaune);
 
 export function getConte(id) {
   return CONTES.find((c) => c.id === id);

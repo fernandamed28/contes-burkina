@@ -1,3 +1,6 @@
 {
-  "diaba-lompo": { "fr": "diaba-lompo/fr.mp3" }
+  "diaba-lompo": {
+    "fr": "diaba-lompo/fr.mp3",
+    "gulmancema": "diaba-lompo/gulmancema.mp3"
+  }
 }

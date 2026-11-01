@@ -152,6 +152,11 @@ export function enregistrement(conteId, langue) {
 let howl = null;
 let synthese = null;
 
+/** Langues pour lesquelles un enregistrement existe (voix nationales d'abord, français en dernier). */
+export function languesEnregistrees(conteId) {
+  return Object.keys(manifest?.[conteId] || {}).sort((a, b) => (a === 'fr') - (b === 'fr'));
+}
+
 export function arreterNarration() {
   howl?.stop();
   howl?.unload();

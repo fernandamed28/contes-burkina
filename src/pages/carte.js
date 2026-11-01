@@ -153,10 +153,10 @@ export function pageCarte(app, params) {
   // ---------- Marqueurs ----------
   const marqueurs = CONTES.map((c) => {
     const el = document.createElement('button');
-    el.className = 'marqueur';
+    el.className = c.alaune ? 'marqueur une' : 'marqueur';
     el.style.setProperty('--c', CATEGORIES[c.categorie].couleur);
     el.setAttribute('aria-label', `${c.titre}, ${c.lieu}`);
-    el.innerHTML = `<span>${CATEGORIES[c.categorie].icone}</span>`;
+    el.innerHTML = `<span>${c.alaune ? '★' : CATEGORIES[c.categorie].icone}</span>`;
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       ouvrir(c);
@@ -165,10 +165,11 @@ export function pageCarte(app, params) {
     return { c, m, el };
   });
 
-  function ouvrir(c) {
-    map.flyTo({ center: c.coords, zoom: Math.max(map.getZoom(), 7.5), speed: 0.8 });
+  function ouvrir(c, { voler = true } = {}) {
+    if (voler) map.flyTo({ center: c.coords, zoom: Math.max(map.getZoom(), 7.5), speed: 0.8 });
     afficherInfo(`
       <span class="badge" style="--c:${CATEGORIES[c.categorie].couleur}">${CATEGORIES[c.categorie].label}</span>
+      ${c.alaune ? '<span class="badge-une">★ À la une</span>' : ''}
       <h2>${c.titre}</h2>
       <p class="meta">${c.lieu} · ${c.region} · ${c.peuple}</p>
       <p>${c.resume}</p>
@@ -201,8 +202,8 @@ export function pageCarte(app, params) {
     liste.innerHTML = visibles.length
       ? visibles
           .map(
-            (c) => `<li><button data-id="${c.id}"><i style="background:${CATEGORIES[c.categorie].couleur}"></i>
-              <strong>${c.titre}</strong><small>${c.lieu} · ${c.peuple}</small></button></li>`,
+            (c) => `<li><button data-id="${c.id}" class="${c.alaune ? 'une' : ''}"><i style="background:${CATEGORIES[c.categorie].couleur}"></i>
+              <strong>${c.alaune ? '★ ' : ''}${c.titre}</strong><small>${c.alaune ? 'À la une · ' : ''}${c.lieu} · ${c.peuple}</small></button></li>`,
           )
           .join('')
       : '<li class="muted">Aucun récit ne correspond.</li>';
@@ -229,10 +230,11 @@ export function pageCarte(app, params) {
     }),
   );
 
-  if (params[0]) {
-    const c = CONTES.find((x) => x.id === params[0]);
-    if (c) map.once('load', () => ouvrir(c));
-  }
+  // sans récit demandé dans l'adresse, la carte s'ouvre sur le récit à la une
+  const demande = CONTES.find((x) => x.id === params[0]);
+  const une = CONTES.find((x) => x.alaune);
+  if (demande) map.once('load', () => ouvrir(demande));
+  else if (une) map.once('load', () => ouvrir(une, { voler: false }));
 
   return () => map.remove();
 }

@@ -389,3 +389,48 @@ blockquote { font: italic 1.2rem/1.5 var(--serif); border-left: 4px solid var(--
 }
 .sound-toggle.repere::after { animation-delay: .9s; }
 @keyframes onde { from { transform: scale(1); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
+
+/* ---------- Récit à la une ---------- */
+.badge-une { display: inline-block; margin-left: 6px; font-size: .78rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--sur-ocre); background: var(--ocre); padding: 3px 10px; border-radius: 999px; }
+.voix { margin: 6px 0 0; font-size: .85rem; font-weight: 600; color: var(--ocre); }
+.hero-une { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; padding: 8px 16px 8px 8px; border-radius: 999px; background: rgba(10, 6, 4, .55); border: 1px solid rgba(224, 165, 38, .5); color: #f3e6cf; text-decoration: none; font-size: .95rem; backdrop-filter: blur(4px); transition: border-color .2s, transform .2s; }
+.hero-une span { background: #e0a526; color: #1a110c; font-weight: 700; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; border-radius: 999px; }
+.hero-une:hover { border-color: #e0a526; transform: translateX(3px); }
+.une-section { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0; margin: 48px clamp(16px, 5vw, 64px) 0; max-width: 1240px; margin-inline: auto; width: calc(100% - 2 * clamp(16px, 5vw, 64px)); background: var(--surface); border: 1px solid var(--ligne); border-radius: 20px; overflow: hidden; box-shadow: 0 0 0 4px rgba(224, 165, 38, .12), 0 20px 50px rgba(0, 0, 0, .25); }
+.une-scene { position: relative; min-height: 340px; }
+.une-scene svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.une-contenu { padding: clamp(22px, 3vw, 40px); display: flex; flex-direction: column; justify-content: center; border-left: 4px solid var(--ocre); }
+.une-contenu h2 { font-size: clamp(1.6rem, 3vw, 2.3rem); margin: 4px 0 6px; }
+.une-voix { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 18px; }
+.voix-ok { background: var(--ocre); color: var(--sur-ocre); font-weight: 600; font-size: .85rem; padding: 4px 12px; border-radius: 999px; }
+.voix-attente { border: 1px dashed var(--ligne); color: var(--muted); font-size: .85rem; padding: 3px 12px; border-radius: 999px; }
+@media (max-width: 860px) {
+  .une-section { grid-template-columns: 1fr; }
+  .une-scene { min-height: 220px; aspect-ratio: 16 / 9; }
+  .une-contenu { border-left: 0; border-top: 4px solid var(--ocre); }
+}
+/* carte de la bibliothèque : le récit à la une occupe toute la largeur */
+.carte-conte.une { border-color: var(--ocre); box-shadow: 0 0 0 3px rgba(224, 165, 38, .18); }
+.carte-conte.grand { grid-column: 1 / -1; display: grid; grid-template-columns: 1.2fr 1fr; }
+.carte-conte.grand .vignette { aspect-ratio: auto; min-height: 280px; border-bottom: 0; border-right: 3px solid var(--ocre); }
+.carte-conte.grand .carte-corps { padding: 26px 28px; display: flex; flex-direction: column; justify-content: center; }
+.carte-conte.grand h3 { font-size: 1.8rem; }
+@media (max-width: 760px) {
+  .carte-conte.grand { grid-template-columns: 1fr; }
+  .carte-conte.grand .vignette { aspect-ratio: 16 / 9; min-height: 0; border-right: 0; border-bottom: 3px solid var(--ocre); }
+}
+/* carte interactive */
+.marqueur.une { width: 46px; height: 46px; background: var(--ocre); z-index: 2; animation: marqueur-une 2s ease-in-out infinite; }
+.marqueur.une span { font-size: 20px; }
+@keyframes marqueur-une { 0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,.4), 0 0 0 0 rgba(224, 165, 38, .6); } 50% { box-shadow: 0 4px 12px rgba(0,0,0,.4), 0 0 0 12px rgba(224, 165, 38, 0); } }
+.carte-liste button.une { border-color: var(--ocre); background: var(--surface-2); }
+.carte-liste button.une strong { color: var(--ocre); }
+/* page Participer */
+.priorite { background: var(--surface); border: 1px solid var(--ocre); border-left: 5px solid var(--ocre); border-radius: var(--rayon); padding: 22px 24px; margin: 22px 0 10px; }
+.priorite h2 { margin: 4px 0 8px; }
+.etat-langues { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.etat-langues li { border: 1px dashed var(--ligne); color: var(--muted); padding: 4px 12px; border-radius: 999px; font-size: .9rem; }
+.etat-langues li.ok { border: 1px solid var(--ocre); background: var(--ocre); color: var(--sur-ocre); font-weight: 600; }
+
+.badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.badges .badge-une { margin-left: 0; }
