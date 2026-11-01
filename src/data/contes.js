@@ -8,9 +8,9 @@
 //  - fin       : dernière scène d'une branche
 
 export const CATEGORIES = {
-  conte: { label: 'Conte', couleur: '#e0a526', icone: '✦' },
-  legende: { label: 'Légende', couleur: '#c2562f', icone: '◆' },
-  histoire: { label: 'Récit historique', couleur: '#3f7cac', icone: '▲' },
+  conte: { label: 'Conte', pluriel: 'Contes', couleur: '#e0a526', icone: '✦' },
+  legende: { label: 'Légende', pluriel: 'Légendes', couleur: '#c2562f', icone: '◆' },
+  histoire: { label: 'Récit historique', pluriel: 'Récits historiques', couleur: '#3f7cac', icone: '▲' },
 };
 
 export const LANGUES = {

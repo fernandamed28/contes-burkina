@@ -70,7 +70,7 @@ export function pageBibliotheque(app) {
       <input type="search" id="q" placeholder="Rechercher…" aria-label="Rechercher" />
       <div class="segments" role="group" aria-label="Catégorie">
         <button class="seg actif" data-cat="">Tous</button>
-        ${Object.entries(CATEGORIES).map(([k, c]) => `<button class="seg" data-cat="${k}">${c.icone} ${c.label}s</button>`).join('')}
+        ${Object.entries(CATEGORIES).map(([k, c]) => `<button class="seg" data-cat="${k}">${c.icone} ${c.pluriel}</button>`).join('')}
       </div>
     </div>
     <div class="cartes" id="grille"></div>
