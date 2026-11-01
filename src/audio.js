@@ -5,7 +5,7 @@ import { Howl } from 'howler';
 const BASE = import.meta.env.BASE_URL;
 
 // ---------- Ambiance ----------
-// Musique de fond (kora et flûte), volontairement discrète, plus encore pendant la narration
+// Musique de fond (kora de Ballaké Sissoko), volontairement discrète, plus encore pendant la narration
 const VOLUME_MUSIQUE = 0.12;
 const VOLUME_MUSIQUE_NARRATION = 0.04;
 let musique = null;
@@ -91,7 +91,7 @@ export function demarrerAmbiance() {
   timers.push(setInterval(() => Math.random() < 0.7 && grillon(), 450));
   if (!musique) {
     musique = new Howl({
-      src: [`${BASE}audio/ambiance-kora.mp3`],
+      src: [`${BASE}audio/ambiance.mp3`],
       html5: true,
       loop: true,
       volume: 0,

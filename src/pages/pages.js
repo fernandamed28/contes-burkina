@@ -130,6 +130,7 @@ export function pageAPropos(app) {
     </ul>
     <h2>Démarche et sources</h2>
     <p>Les récits sont des adaptations en français de traditions orales. Les versions varient d'un village, d'une famille ou d'un griot à l'autre : nous présentons ici une version, en indiquant toujours son origine. Les sources sont citées à la fin de chaque récit.</p>
+    <p>La musique d'ambiance est « Nan Sira Madi » du joueur de kora malien Ballaké Sissoko (A COLORS SHOW, <a href="https://youtu.be/O_J4VUFahKs" target="_blank" rel="noopener">voir la vidéo</a>). Elle est utilisée ici à des fins pédagogiques ; tous les droits appartiennent à l'artiste et à ses ayants droit.</p>
     <p>Le fond de carte provient d'OpenStreetMap (via OpenFreeMap), le relief des AWS Terrain Tiles et les limites des régions de geoBoundaries (CC BY 4.0). Ces limites correspondent au découpage en <strong>13 régions</strong> : la réorganisation territoriale de 2025 (17 régions, 47 provinces) n'est pas encore disponible en données ouvertes. Elle pourra être intégrée dès sa publication.</p>
     <h2>Technologies</h2>
     <p class="tags">${['HTML5', 'CSS3', 'JavaScript (ES modules)', 'Vite', 'MapLibre GL JS', 'GSAP', 'Howler.js', 'Web Audio API', 'Web Speech API', 'SVG', 'GitHub Pages'].map((t) => `<span>${t}</span>`).join('')}</p>
