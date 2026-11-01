@@ -23,6 +23,7 @@ export async function pageConte(app, [id]) {
   let parcours = [0];
   let auto = false;
   let timerProgression = null;
+  let termine = false;
 
   app.innerHTML = `
   <article class="conte" style="--c:${cat.couleur}">
@@ -60,12 +61,21 @@ export async function pageConte(app, [id]) {
     </div>
 
     <nav class="scene-nav" aria-label="Navigation dans le récit">
-      <button id="prec" class="btn ghost">← Précédent</button>
-      <div class="points" id="points" aria-hidden="true"></div>
-      <div class="nav-droite">
-        <button id="ecouter" class="btn ghost" title="Lire la scène à voix haute">🔊 Écouter</button>
-        <button id="auto" class="btn ghost" aria-pressed="false" title="Lecture automatique">⏵ Auto</button>
-        <button id="suiv" class="btn">Suivant →</button>
+      <div class="progression">
+        <div class="progression-tete">
+          <strong id="etape" aria-live="polite"></strong>
+          <span id="etapeInfo" class="etape-info"></span>
+        </div>
+        <div class="progression-barre" aria-hidden="true"><span id="progBarre"></span></div>
+        <ol class="points" id="points" aria-label="Étapes du récit"></ol>
+      </div>
+      <div class="nav-boutons">
+        <button id="prec" class="btn ghost">← Précédent</button>
+        <div class="nav-droite">
+          <button id="ecouter" class="btn ghost" title="Lire la scène à voix haute">🔊 Écouter</button>
+          <button id="auto" class="btn ghost" aria-pressed="false" title="Lecture automatique">⏵ Auto</button>
+          <button id="suiv" class="btn">Suivant →</button>
+        </div>
       </div>
     </nav>
 
@@ -146,14 +156,69 @@ export async function pageConte(app, [id]) {
     );
     if (s.choix) gsap.from(choix.children, { opacity: 0, y: 12, stagger: 0.12, delay: 0.5 });
 
-    $('#prec').disabled = parcours.length <= 1;
-    $('#suiv').disabled = !!s.choix;
-    $('#suiv').textContent = s.fin ? 'Terminer ✓' : 'Suivant →';
-    $('#points').innerHTML = parcours.map((p, k) => `<i class="${k === parcours.length - 1 ? 'actif' : ''}"></i>`).join('');
+    termine = false;
+    majProgression();
+  }
+
+  // Nombre d'étapes restantes après la scène i, en suivant le premier choix à chaque embranchement
+  function restantes(i) {
+    let n = 0;
+    const vus = new Set();
+    while (!scenes[i].fin && !vus.has(i)) {
+      vus.add(i);
+      const s = scenes[i];
+      i = s.choix ? indexDe(s.choix[0].vers) : s.suite ? indexDe(s.suite) : i + 1;
+      n++;
+    }
+    return n;
+  }
+
+  function majProgression() {
+    const s = scenes[courant];
+    const pos = parcours.length;
+    const total = pos + restantes(courant);
+    $('#etape').textContent = termine ? 'Récit terminé ✓' : `Étape ${pos} sur ${total}`;
+    $('#etapeInfo').textContent = termine ? '' : s.choix ? '◆ À toi de choisir la suite' : s.fin ? 'Dernière étape' : '';
+    $('#etapeInfo').className = 'etape-info' + (s.choix && !termine ? ' choix-attendu' : '');
+    $('#progBarre').style.width = `${termine ? 100 : Math.round((pos / total) * 100)}%`;
+
+    const points = parcours.map((p, k) => {
+      const actuel = k === pos - 1;
+      const etat = actuel && !termine ? 'actif' : 'fait';
+      const marque = scenes[p].choix ? ' choix' : '';
+      return `<li><button class="point ${etat}${marque}" data-k="${k}" ${actuel ? 'aria-current="step"' : ''} title="Revenir à l'étape ${k + 1}"><span>${k + 1}</span></button></li>`;
+    });
+    for (let k = pos; k < total; k++) points.push(`<li><span class="point avenir"><span>${k + 1}</span></span></li>`);
+    $('#points').innerHTML = points.join('');
+    $('#points').querySelectorAll('button.point').forEach((b) =>
+      b.addEventListener('click', () => {
+        const k = Number(b.dataset.k);
+        if (k === parcours.length - 1 && !termine) return;
+        arreterNarrationScene();
+        parcours = parcours.slice(0, k + 1);
+        afficher(parcours[k], -1);
+      }),
+    );
+
+    $('#prec').disabled = pos <= 1;
+    const suiv = $('#suiv');
+    suiv.classList.remove('attente');
+    if (termine) {
+      suiv.disabled = false;
+      suiv.textContent = 'Voir la fin ↓';
+    } else if (s.choix) {
+      suiv.disabled = true;
+      suiv.classList.add('attente');
+      suiv.textContent = 'Choisis la suite ↑';
+    } else {
+      suiv.disabled = false;
+      suiv.textContent = s.fin ? 'Terminer ✓' : 'Suivant →';
+    }
   }
 
   function suivante() {
     const s = scenes[courant];
+    if (termine) return $('#fin').scrollIntoView({ behavior: 'smooth' });
     if (s.choix) return;
     if (s.fin) return terminer();
     const cible = s.suite ? indexDe(s.suite) : courant + 1;
@@ -208,28 +273,48 @@ export async function pageConte(app, [id]) {
   document.addEventListener('keydown', onKey);
 
   function terminer() {
+    termine = true;
+    majProgression();
     const fin = $('#fin');
     const autres = CONTES.filter((c) => c.id !== conte.id).sort(() => Math.random() - 0.5).slice(0, 3);
+    const rang = CONTES.findIndex((c) => c.id === conte.id);
+    const prochain = CONTES[(rang + 1) % CONTES.length];
+    const nbChoix = parcours.filter((p) => scenes[p].choix).length;
     const q = conte.quiz;
     const ordre = q.reponses.map((r, k) => ({ r, k })).sort(() => Math.random() - 0.5);
     fin.hidden = false;
     fin.innerHTML = `
-      <div class="fin-grille">
+      <div class="fin-bandeau">
         <div>
-          <h2>La sagesse du conte</h2>
+          <p class="fin-sur-titre">✓ Fin du récit</p>
+          <h2>${conte.titre}</h2>
+          <p class="muted">Tu as parcouru ${parcours.length} étapes${nbChoix ? ` et fait ${nbChoix} choix` : ''}.</p>
+        </div>
+        <div class="fin-actions">
+          <button class="btn" id="recommencer">↺ Revivre autrement</button>
+          <a class="btn ghost" href="#/conte/${prochain.id}">Récit suivant →</a>
+          <a class="btn ghost" href="#/bibliotheque">← Bibliothèque</a>
+          <a class="btn ghost" href="#/carte/${conte.id}">◎ Voir sur la carte</a>
+        </div>
+      </div>
+      <div class="fin-grille">
+        <section class="fin-carte">
+          <h3>La sagesse du conte</h3>
           <blockquote>${conte.morale}</blockquote>
+        </section>
+        <section class="fin-carte">
           <h3>As-tu bien écouté ?</h3>
           <p>${q.question}</p>
           <div class="quiz">${ordre.map(({ r, k }) => `<button class="btn ghost" data-k="${k}">${r}</button>`).join('')}</div>
           <p class="quiz-res" aria-live="polite"></p>
-        </div>
-        <aside>
+        </section>
+        <section class="fin-carte">
           <h3>Source</h3>
           <p class="muted">${conte.source}</p>
-          <p><button class="btn ghost" id="recommencer">↺ Revivre le récit autrement</button></p>
-        </aside>
+          <p class="muted">${conte.peuple} · ${conte.lieu} (${conte.region})</p>
+        </section>
       </div>
-      <h3>D'autres récits</h3>
+      <h3 class="section-titre">D'autres récits</h3>
       <div class="cartes">${autres.map(carteConte).join('')}</div>`;
     fin.querySelectorAll('.quiz button').forEach((b) =>
       b.addEventListener('click', () => {
