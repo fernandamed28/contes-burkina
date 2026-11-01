@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { CONTES, CATEGORIES, LANGUES, CONTE_UNE } from '../data/contes.js';
 import { renderScene, animateScene } from '../scenes.js';
 import { carteConte } from './conte.js';
-import { demarrerAmbiance, ambianceActive, chargerManifest, languesEnregistrees } from '../audio.js';
+import { demarrerAmbiance, ambianceActive, chargerManifest, languesEnregistrees, detailsEnregistrement, conteurs } from '../audio.js';
 
 function blocUne() {
   const c = CONTE_UNE;
@@ -18,9 +18,10 @@ function blocUne() {
       <p class="meta">${CATEGORIES[c.categorie].label} · ${c.peuple} · ${c.lieu} (${c.region})</p>
       <p>${c.resume}</p>
       <div class="une-voix">
-        ${voix.map((l) => `<span class="voix-ok">🎧 ${LANGUES[l]}</span>`).join('')}
+        ${voix.map((l) => `<span class="voix-ok">🎧 ${LANGUES[l]}${detailsEnregistrement(c.id, l)?.duree ? ` · ${detailsEnregistrement(c.id, l).duree}` : ''}</span>`).join('')}
         ${attendues.map((l) => `<span class="voix-attente">${LANGUES[l]} bientôt</span>`).join('')}
       </div>
+      ${conteurs(c.id).map((v) => `<p class="credit-voix">🎙️ Voix (${v.langues.map((l) => LANGUES[l]).join(' et ')}) : <strong>${v.voix}</strong></p>`).join('')}
       <div class="actions">
         <a class="btn grand" href="#/conte/${c.id}">▶ Écouter le récit</a>
         <a class="btn ghost" href="#/carte/${c.id}">◎ Sur la carte</a>

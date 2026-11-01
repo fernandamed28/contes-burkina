@@ -21,8 +21,9 @@ npm run dev
 1. Placer le fichier dans `public/audio/<id-du-conte>/<langue>.mp3` (langues : `moore`, `dioula`, `fulfulde`, `gulmancema`, `fr`).
 2. Le déclarer dans `public/audio/manifest.json`, par exemple :
    ```json
-   { "yennenga": { "moore": "yennenga/moore.mp3" } }
+   { "yennenga": { "moore": { "fichier": "yennenga/moore.mp3", "voix": "NOM Prénom", "duree": "1 min 20" } } }
    ```
+   `voix` et `duree` sont affichés sur le lecteur, la fiche de fin et l'accueil (récit à la une).
 3. Publier avec `npm run deploy` (construit le site et le pousse sur la branche `gh-pages`). Les anciens fichiers `assets/` sont conservés (`--add`) : un visiteur dont le navigateur a gardé une ancienne page en cache ne tombe pas sur une page sans style.
 
 ## Ajouter un récit

@@ -5,6 +5,7 @@ import { renderScene, animateScene, killScene } from '../scenes.js';
 import {
   chargerManifest, enregistrement, languesEnregistrees, jouerEnregistrement, pauseEnregistrement, progressionEnregistrement,
   arreterNarration, lireTexte, syntheseDisponible, demarrerAmbiance, ambianceActive, musiqueCoupeeParVisiteur,
+  detailsEnregistrement, conteurs,
 } from '../audio.js';
 
 export async function pageConte(app, [id]) {
@@ -40,7 +41,9 @@ export async function pageConte(app, [id]) {
       ${conte.langues
         .map((l) => {
           const dispo = l === 'fr' ? true : !!enregistrement(conte.id, l);
-          return `<button role="radio" data-l="${l}" class="langue ${dispo ? '' : 'avenir'}" aria-checked="false">
+          const d = detailsEnregistrement(conte.id, l);
+          const bulle = d?.voix ? ` title="Voix de ${d.voix}${d.duree ? ` · ${d.duree}` : ''}"` : '';
+          return `<button role="radio" data-l="${l}" class="langue ${dispo ? '' : 'avenir'}" aria-checked="false"${bulle}>
             ${LANGUES[l]}${l === 'fr' && !enregistrement(conte.id, 'fr') ? ' <small>(synthèse)</small>' : dispo ? ' <small>♪ extrait</small>' : ' <small>à venir</small>'}</button>`;
         })
         .join('')}
@@ -48,7 +51,7 @@ export async function pageConte(app, [id]) {
     <div class="lecteur-audio" id="lecteurAudio" hidden>
       <button id="audioPlay" class="rond" aria-label="Lecture / pause">▶</button>
       <div class="barre"><span id="audioBarre"></span></div>
-      <span class="muted" id="audioLabel"></span>
+      <span class="audio-infos"><span id="audioLabel"></span><small id="audioVoix"></small></span>
     </div>
     <p class="note-langue muted" id="noteLangue" hidden></p>
 
@@ -104,6 +107,8 @@ export async function pageConte(app, [id]) {
     } else note.hidden = true;
     if (src) {
       $('#audioLabel').textContent = `Début du récit raconté en ${LANGUES[langue]}`;
+      const d = detailsEnregistrement(conte.id, langue);
+      $('#audioVoix').textContent = [d?.voix && `🎙️ Voix de ${d.voix}`, d?.duree].filter(Boolean).join(' · ');
       $('#audioPlay').textContent = '▶';
     }
   }
@@ -321,6 +326,7 @@ export async function pageConte(app, [id]) {
           <h3>Source</h3>
           <p class="muted">${conte.source}</p>
           <p class="muted">${conte.peuple} · ${conte.lieu} (${conte.region})</p>
+          ${conteurs(conte.id).map((c) => `<p class="credit-voix">🎙️ Voix (${c.langues.map((l) => LANGUES[l]).join(', ')}) : <strong>${c.voix}</strong></p>`).join('')}
         </section>
       </div>
       <h3 class="section-titre">D'autres récits</h3>

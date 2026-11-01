@@ -173,8 +173,31 @@ export async function chargerManifest() {
 }
 
 /** Fichier audio enregistré pour un conte et une langue, s'il existe. */
+// Une entrée du manifeste est soit un chemin, soit { fichier, voix, duree }.
+function entree(conteId, langue) {
+  const e = manifest?.[conteId]?.[langue];
+  return typeof e === 'string' ? { fichier: e } : e || null;
+}
+
 export function enregistrement(conteId, langue) {
-  return manifest?.[conteId]?.[langue] ? `${BASE}audio/${manifest[conteId][langue]}` : null;
+  const e = entree(conteId, langue);
+  return e?.fichier ? `${BASE}audio/${e.fichier}` : null;
+}
+
+/** Détails d'un enregistrement : nom du conteur et durée, s'ils sont renseignés. */
+export function detailsEnregistrement(conteId, langue) {
+  const e = entree(conteId, langue);
+  return e ? { voix: e.voix || '', duree: e.duree || '' } : null;
+}
+
+/** Conteurs d'un récit, avec les langues de chacun : [{ voix, langues: [...] }]. */
+export function conteurs(conteId) {
+  const parVoix = new Map();
+  for (const l of languesEnregistrees(conteId)) {
+    const v = entree(conteId, l)?.voix;
+    if (v) parVoix.set(v, [...(parVoix.get(v) || []), l]);
+  }
+  return [...parVoix].map(([voix, langues]) => ({ voix, langues }));
 }
 
 let howl = null;
