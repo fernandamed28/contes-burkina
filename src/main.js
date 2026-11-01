@@ -39,6 +39,24 @@ toggle.addEventListener('click', () => {
   toggle.setAttribute('aria-expanded', ouvert);
 });
 
+// Mode clair / sombre (sombre par défaut ; le choix est mémorisé dans ce navigateur)
+const themeBouton = document.getElementById('themeToggle');
+function appliquerTheme(clair) {
+  if (clair) document.documentElement.dataset.theme = 'light';
+  else delete document.documentElement.dataset.theme;
+  const label = clair ? 'Passer en mode sombre' : 'Passer en mode clair';
+  themeBouton.setAttribute('aria-label', label);
+  themeBouton.title = label;
+}
+appliquerTheme(document.documentElement.dataset.theme === 'light');
+themeBouton.addEventListener('click', () => {
+  const clair = document.documentElement.dataset.theme !== 'light';
+  appliquerTheme(clair);
+  try {
+    localStorage.setItem('theme', clair ? 'light' : 'dark');
+  } catch {}
+});
+
 // Ambiance sonore (démarre seulement après une action de l'utilisateur, comme l'exigent les navigateurs)
 const son = document.getElementById('soundToggle');
 function majBoutonSon(actif) {
