@@ -5,6 +5,10 @@ import { Howl } from 'howler';
 const BASE = import.meta.env.BASE_URL;
 
 // ---------- Ambiance ----------
+// Musique de fond (kora et flûte), volontairement discrète, plus encore pendant la narration
+const VOLUME_MUSIQUE = 0.12;
+const VOLUME_MUSIQUE_NARRATION = 0.04;
+let musique = null;
 let ctx = null;
 let master = null;
 let timers = [];
@@ -78,26 +82,35 @@ export function demarrerAmbiance() {
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
-    master.gain.value = 0.8;
+    master.gain.value = 0.5;
     master.connect(ctx.destination);
     vent();
   }
   ctx.resume();
   if (timers.length) return;
   timers.push(setInterval(() => Math.random() < 0.7 && grillon(), 450));
-  timers.push(
-    setInterval(() => {
-      if (Math.random() < 0.6) {
-        balafon();
-        if (Math.random() < 0.5) setTimeout(balafon, 220);
-      }
-    }, 1600),
-  );
+  if (!musique) {
+    musique = new Howl({
+      src: [`${BASE}audio/ambiance-kora.mp3`],
+      html5: true,
+      loop: true,
+      volume: 0,
+      // Musique indisponible : on revient aux notes de balafon générées
+      onloaderror: () => timers.push(setInterval(() => Math.random() < 0.6 && balafon(), 1600)),
+    });
+  }
+  musique.play();
+  musique.fade(0, lectureEnCours() ? VOLUME_MUSIQUE_NARRATION : VOLUME_MUSIQUE, 2000);
+}
+
+function attenuerMusique(narration) {
+  if (musique?.playing()) musique.fade(musique.volume(), narration ? VOLUME_MUSIQUE_NARRATION : VOLUME_MUSIQUE, 600);
 }
 
 export function arreterAmbiance() {
   timers.forEach(clearInterval);
   timers = [];
+  musique?.pause();
   ctx?.suspend();
 }
 
@@ -132,21 +145,25 @@ export function arreterNarration() {
   howl = null;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   synthese = null;
+  attenuerMusique(false);
 }
 
 /** Joue l'enregistrement complet d'un conte dans une langue. */
 export function jouerEnregistrement(src, { onend, onplay } = {}) {
   arreterNarration();
-  howl = new Howl({ src: [src], html5: true, onend, onplay });
+  howl = new Howl({ src: [src], html5: true, onplay, onend: () => { attenuerMusique(false); onend?.(); } });
   howl.play();
+  attenuerMusique(true);
   return howl;
 }
 
 export function pauseEnregistrement() {
   if (!howl) return false;
-  if (howl.playing()) howl.pause();
-  else howl.play();
-  return howl.playing();
+  const enLecture = !howl.playing();
+  if (enLecture) howl.play();
+  else howl.pause();
+  attenuerMusique(enLecture);
+  return enLecture;
 }
 
 export function progressionEnregistrement() {
@@ -168,9 +185,13 @@ export function lireTexte(texte, { onend } = {}) {
   u.rate = 0.95;
   const voix = speechSynthesis.getVoices().find((v) => v.lang?.startsWith('fr'));
   if (voix) u.voice = voix;
-  u.onend = () => onend?.();
+  u.onend = () => {
+    attenuerMusique(false);
+    onend?.();
+  };
   synthese = u;
   speechSynthesis.speak(u);
+  attenuerMusique(true);
 }
 
 export function lectureEnCours() {
