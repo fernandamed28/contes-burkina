@@ -78,8 +78,21 @@ code { background: var(--surface-2); padding: .1em .4em; border-radius: 6px; fon
   width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor: pointer;
 }
 .menu-toggle { display: none; }
-.sound-toggle[aria-pressed='true'] { background: var(--ocre); color: #1a110c; box-shadow: 0 0 0 4px rgba(224, 165, 38, .25); animation: pulse 2s infinite; }
-@keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(224, 165, 38, 0); } }
+.sound-toggle { display: grid; place-items: center; padding: 0; color: var(--muted); transition: background .25s, color .25s, border-color .25s; -webkit-tap-highlight-color: transparent; }
+.sound-toggle .ico-off { width: 20px; height: 20px; }
+.sound-toggle .ico-on { display: none; align-items: flex-end; gap: 2px; height: 16px; }
+.sound-toggle .ico-on i { width: 3px; height: 100%; border-radius: 2px; background: currentColor; transform-origin: bottom; animation: egaliseur .9s ease-in-out infinite; }
+.sound-toggle .ico-on i:nth-child(2) { animation-delay: -.3s; }
+.sound-toggle .ico-on i:nth-child(3) { animation-delay: -.6s; }
+.sound-toggle .ico-on i:nth-child(4) { animation-delay: -.15s; }
+@keyframes egaliseur { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+/* état désactivé (par défaut) : bouton sombre, haut-parleur barré */
+.sound-toggle[aria-pressed='false'] { background: var(--surface-2); border-color: var(--ligne); color: var(--muted); box-shadow: none; animation: none; }
+/* état activé : fond ocre, égaliseur animé, halo pulsé */
+.sound-toggle[aria-pressed='true'] { background: var(--ocre); border-color: var(--ocre); color: #1a110c; animation: pulse 2s infinite; }
+.sound-toggle[aria-pressed='true'] .ico-off { display: none; }
+.sound-toggle[aria-pressed='true'] .ico-on { display: flex; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(224, 165, 38, .45); } 50% { box-shadow: 0 0 0 8px rgba(224, 165, 38, 0); } }
 
 @media (max-width: 860px) {
   .menu-toggle { display: block; order: 3; }

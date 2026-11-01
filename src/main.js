@@ -41,8 +41,12 @@ toggle.addEventListener('click', () => {
 
 // Ambiance sonore (démarre seulement après une action de l'utilisateur, comme l'exigent les navigateurs)
 const son = document.getElementById('soundToggle');
-son.addEventListener('click', () => {
-  if (ambianceActive()) arreterAmbiance();
-  else demarrerAmbiance();
-  son.setAttribute('aria-pressed', ambianceActive());
-});
+function majBoutonSon(actif) {
+  son.setAttribute('aria-pressed', String(actif));
+  const label = actif ? 'Couper la musique' : 'Activer la musique';
+  son.setAttribute('aria-label', label);
+  son.title = label;
+}
+majBoutonSon(false);
+window.addEventListener('ambiance', (e) => majBoutonSon(e.detail));
+son.addEventListener('click', () => (ambianceActive() ? arreterAmbiance() : demarrerAmbiance()));

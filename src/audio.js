@@ -74,11 +74,22 @@ function balafon() {
   });
 }
 
+// État voulu par le visiteur. On ne lit pas ctx.state : resume()/suspend() sont
+// asynchrones et l'état renvoyé juste après un clic est encore l'ancien.
+// L'ambiance est toujours coupée à l'arrivée sur le site.
+let actif = false;
+
 export function ambianceActive() {
-  return !!ctx && ctx.state === 'running' && timers.length > 0;
+  return actif;
+}
+
+function signaler() {
+  window.dispatchEvent(new CustomEvent('ambiance', { detail: actif }));
 }
 
 export function demarrerAmbiance() {
+  actif = true;
+  signaler();
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
@@ -108,6 +119,8 @@ function attenuerMusique(narration) {
 }
 
 export function arreterAmbiance() {
+  actif = false;
+  signaler();
   timers.forEach(clearInterval);
   timers = [];
   musique?.pause();

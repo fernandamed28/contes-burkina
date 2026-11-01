@@ -53,10 +53,7 @@ export function pageAccueil(app) {
   gsap.from('.chiffres > div', { opacity: 0, y: 20, stagger: 0.1, delay: 0.6 });
 
   app.querySelector('#entrer').addEventListener('click', () => {
-    if (!ambianceActive()) {
-      demarrerAmbiance();
-      document.querySelector('#soundToggle')?.setAttribute('aria-pressed', 'true');
-    }
+    if (!ambianceActive()) demarrerAmbiance();
     location.hash = '#/carte';
   });
 }
