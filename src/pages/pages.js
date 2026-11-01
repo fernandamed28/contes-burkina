@@ -103,7 +103,7 @@ export function pageParticiper(app) {
     <p>La plateforme ne vit que grâce aux conteurs. Chaque récit peut être enregistré dans les langues nationales : <strong>Mooré, Dioula, Fulfulde, Gulmancema</strong> et d'autres encore.</p>
     <div class="etapes">
       <div><span>1</span><h3>Choisis un récit</h3><p>Lis-le dans la <a href="#/bibliotheque">bibliothèque</a> pour bien connaître l'histoire.</p></div>
-      <div><span>2</span><h3>Raconte-le dans ta langue</h3><p>Raconte-le à ta manière, comme lors d'une veillée, en 2 à 4 minutes. Inutile de traduire mot à mot.</p></div>
+      <div><span>2</span><h3>Raconte le début dans ta langue</h3><p>Raconte le début du récit à ta manière, comme lors d'une veillée, en 1 à 2 minutes. Inutile de traduire mot à mot.</p></div>
       <div><span>3</span><h3>Enregistre-toi</h3><p>Avec un téléphone, dans un endroit calme, à environ 20 cm de la bouche. Format MP3 ou M4A.</p></div>
       <div><span>4</span><h3>Envoie le fichier</h3><p>Nomme-le <code>identifiant-langue.mp3</code> (ex. <code>yennenga-moore.mp3</code>) et transmets-le à l'équipe du projet.</p></div>
     </div>
@@ -134,7 +134,15 @@ export function pageAPropos(app) {
     <p>Le fond de carte provient d'OpenStreetMap (via OpenFreeMap), le relief des AWS Terrain Tiles et les limites des régions de geoBoundaries (CC BY 4.0). Ces limites correspondent au découpage en <strong>13 régions</strong> : la réorganisation territoriale de 2025 (17 régions, 47 provinces) n'est pas encore disponible en données ouvertes. Elle pourra être intégrée dès sa publication.</p>
     <h2>Technologies</h2>
     <p class="tags">${['HTML5', 'CSS3', 'JavaScript (ES modules)', 'Vite', 'MapLibre GL JS', 'GSAP', 'Howler.js', 'Web Audio API', 'Web Speech API', 'SVG', 'GitHub Pages'].map((t) => `<span>${t}</span>`).join('')}</p>
+    <h2>Pour aller plus loin</h2>
+    <p>D'autres contes du Burkina Faso, en langue originale avec leur traduction française (mooré, jula, bwamu, lyele, peul…), sont rassemblés sur <a href="https://www.abcburkina.net/ancien/contes1.htm" target="_blank" rel="noopener">abcburkina.net</a>.</p>
     <h2>L'équipe — Groupe 13</h2>
+    <ul class="equipe">
+      <li><strong>TEGA</strong> Paamda Sawratou Lareine <span>SIE</span></li>
+      <li><strong>TINDANO</strong> Fernand Amed <span>SI</span></li>
+      <li><strong>OUEDRAOGO</strong> Adama <span>SIE</span></li>
+      <li><strong>KABORE</strong> Nongdo Valery Ariel <span>SIE</span></li>
+    </ul>
     <p class="muted">Master SI · Module Web Multimédia · 2026</p>
   </section>`;
 }

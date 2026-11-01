@@ -240,6 +240,9 @@ blockquote { font: italic 1.3rem/1.5 var(--serif); border-left: 4px solid var(--
 .tableau th, .tableau td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--ligne); }
 .tableau th { color: var(--ocre); font-weight: 600; }
 .liste li { margin-bottom: 8px; }
+.equipe { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.equipe li { background: var(--surface); border: 1px solid var(--ligne); border-radius: 10px; padding: 12px 16px; }
+.equipe span { float: right; color: var(--ocre); font-size: .85rem; font-weight: 600; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .tags span { background: var(--surface-2); border: 1px solid var(--ligne); padding: 4px 12px; border-radius: 999px; font-size: .85rem; }
 

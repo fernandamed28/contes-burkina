@@ -40,7 +40,7 @@ export async function pageConte(app, [id]) {
         .map((l) => {
           const dispo = l === 'fr' ? true : !!enregistrement(conte.id, l);
           return `<button role="radio" data-l="${l}" class="langue ${dispo ? '' : 'avenir'}" aria-checked="false">
-            ${LANGUES[l]}${l === 'fr' && !enregistrement(conte.id, 'fr') ? ' <small>(synthèse)</small>' : dispo ? ' <small>♪</small>' : ' <small>à venir</small>'}</button>`;
+            ${LANGUES[l]}${l === 'fr' && !enregistrement(conte.id, 'fr') ? ' <small>(synthèse)</small>' : dispo ? ' <small>♪ extrait</small>' : ' <small>à venir</small>'}</button>`;
         })
         .join('')}
     </div>
@@ -86,10 +86,10 @@ export async function pageConte(app, [id]) {
     const note = $('#noteLangue');
     if (!src && langue !== 'fr') {
       note.hidden = false;
-      note.innerHTML = `L'enregistrement en <strong>${LANGUES[langue]}</strong> n'est pas encore disponible. Tu peux <a href="#/participer">raconter ce conte dans ta langue</a> ! En attendant, le texte reste en français.`;
+      note.innerHTML = `L'extrait audio en <strong>${LANGUES[langue]}</strong> n'est pas encore disponible. Tu peux <a href="#/participer">raconter ce conte dans ta langue</a> ! En attendant, le texte reste en français.`;
     } else note.hidden = true;
     if (src) {
-      $('#audioLabel').textContent = `Récit complet en ${LANGUES[langue]}`;
+      $('#audioLabel').textContent = `Début du récit raconté en ${LANGUES[langue]}`;
       $('#audioPlay').textContent = '▶';
     }
   }
