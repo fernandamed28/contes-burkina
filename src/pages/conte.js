@@ -3,7 +3,8 @@ import { gsap } from 'gsap';
 import { getConte, CONTES, CATEGORIES, LANGUES } from '../data/contes.js';
 import { renderScene, animateScene, killScene } from '../scenes.js';
 import {
-  chargerManifest, enregistrement, languesEnregistrees, jouerEnregistrement, pauseEnregistrement, progressionEnregistrement,
+  chargerManifest, enregistrement, languesEnregistrees, jouerEnregistrement, pauseEnregistrement,
+  etatEnregistrement, allerA, changerVitesse, changerVolumeVoix, reglagesLecteur,
   arreterNarration, lireTexte, syntheseDisponible, demarrerAmbiance, ambianceActive, musiqueCoupeeParVisiteur,
   detailsEnregistrement, conteurs,
 } from '../audio.js';
@@ -49,9 +50,22 @@ export async function pageConte(app, [id]) {
         .join('')}
     </div>
     <div class="lecteur-audio" id="lecteurAudio" hidden>
-      <button id="audioPlay" class="rond" aria-label="Lecture / pause">▶</button>
-      <div class="barre"><span id="audioBarre"></span></div>
-      <span class="audio-infos"><span id="audioLabel"></span><small id="audioVoix"></small></span>
+      <div class="lecteur-ligne">
+        <button id="audioRecul" class="saut" aria-label="Reculer de 10 secondes" title="Reculer de 10 s">−10 s</button>
+        <button id="audioPlay" class="rond" aria-label="Lecture">▶</button>
+        <button id="audioAvance" class="saut" aria-label="Avancer de 10 secondes" title="Avancer de 10 s">+10 s</button>
+        <input type="range" id="audioSeek" class="seek" min="0" max="1000" step="1" value="0" aria-label="Position dans l'enregistrement" />
+        <span class="temps"><span id="audioTemps">0:00</span> / <span id="audioDuree">0:00</span></span>
+      </div>
+      <div class="lecteur-ligne secondaire">
+        <span class="audio-infos"><span id="audioLabel"></span><small id="audioVoix"></small></span>
+        <div class="vitesses" role="group" aria-label="Vitesse de lecture">
+          ${[0.75, 1, 1.25, 1.5].map((v) => `<button data-v="${v}" class="${v === reglagesLecteur().vitesse ? 'actif' : ''}" aria-pressed="${v === reglagesLecteur().vitesse}">${String(v).replace('.', ',')}×</button>`).join('')}
+        </div>
+        <label class="volume-voix" title="Volume de la voix"><span aria-hidden="true">🔊</span><span class="sr">Volume de la voix</span>
+          <input type="range" id="audioVolume" min="0" max="100" value="${Math.round(reglagesLecteur().volume * 100)}" />
+        </label>
+      </div>
     </div>
     <p class="note-langue muted" id="noteLangue" hidden></p>
 
@@ -110,6 +124,10 @@ export async function pageConte(app, [id]) {
       const d = detailsEnregistrement(conte.id, langue);
       $('#audioVoix').textContent = [d?.voix && `🎙️ Voix de ${d.voix}`, d?.duree].filter(Boolean).join(' · ');
       $('#audioPlay').textContent = '▶';
+      $('#audioSeek').value = 0;
+      $('#audioSeek').style.setProperty('--p', '0%');
+      $('#audioTemps').textContent = '0:00';
+      $('#audioDuree').textContent = detailsEnregistrement(conte.id, langue)?.duree?.replace(/(\d+) min (\d+)/, (m, a, b) => `${a}:${b.padStart(2, '0')}`) || '0:00';
     }
   }
 
@@ -123,18 +141,81 @@ export async function pageConte(app, [id]) {
     }),
   );
 
+  // ---------- Lecteur audio : barre déplaçable, sauts de 10 s, vitesse, volume ----------
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  let glisse = false;
+  function majLecteur() {
+    const e = etatEnregistrement();
+    const seek = $('#audioSeek');
+    if (!e) return;
+    if (!glisse && e.duree) seek.value = Math.round((e.position / e.duree) * 1000);
+    seek.style.setProperty('--p', `${(seek.value / 10).toFixed(1)}%`);
+    if (!glisse) $('#audioTemps').textContent = fmt(e.position);
+    if (e.duree) $('#audioDuree').textContent = fmt(e.duree);
+    $('#audioPlay').textContent = e.joue ? '❚❚' : '▶';
+    $('#audioPlay').setAttribute('aria-label', e.joue ? 'Pause' : 'Lecture');
+  }
+  function suivreLecture() {
+    clearInterval(timerProgression);
+    timerProgression = setInterval(majLecteur, 250);
+  }
+  // démarre l'enregistrement de la langue choisie s'il n'est pas encore chargé, puis exécute « ensuite »
+  function assurerLecture(ensuite, essais = 25) {
+    if ($('#audioPlay').dataset.charge === langue && etatEnregistrement()?.duree) return ensuite?.();
+    if ($('#audioPlay').dataset.charge !== langue) $('#audioPlay').click();
+    if (ensuite && essais > 0) setTimeout(() => assurerLecture(ensuite, essais - 1), 200); // 5 s au plus
+  }
+  $('#audioSeek').addEventListener('input', () => {
+    glisse = true;
+    const e = etatEnregistrement();
+    $('#audioSeek').style.setProperty('--p', `${($('#audioSeek').value / 10).toFixed(1)}%`);
+    if (e?.duree) $('#audioTemps').textContent = fmt(($('#audioSeek').value / 1000) * e.duree);
+  });
+  $('#audioSeek').addEventListener('change', () => {
+    const cible = $('#audioSeek').value / 1000;
+    glisse = false;
+    assurerLecture(() => {
+      allerA(cible * etatEnregistrement().duree);
+      majLecteur();
+    });
+  });
+  const sauter = (d) => assurerLecture(() => {
+    allerA(etatEnregistrement().position + d);
+    majLecteur();
+  });
+  // au clavier, les flèches sur la barre avancent ou reculent de 5 secondes
+  $('#audioSeek').addEventListener('keydown', (e) => {
+    const d = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    e.stopPropagation(); // sans changer de scène
+    sauter(d);
+  });
+  $('#audioRecul').addEventListener('click', () => sauter(-10));
+  $('#audioAvance').addEventListener('click', () => sauter(10));
+  app.querySelectorAll('.vitesses button').forEach((b) =>
+    b.addEventListener('click', () => {
+      changerVitesse(Number(b.dataset.v));
+      app.querySelectorAll('.vitesses button').forEach((x) => {
+        x.classList.toggle('actif', x === b);
+        x.setAttribute('aria-pressed', x === b);
+      });
+    }),
+  );
+  $('#audioVolume').addEventListener('input', () => changerVolumeVoix($('#audioVolume').value / 100));
+
   $('#audioPlay').addEventListener('click', () => {
     const src = enregistrement(conte.id, langue);
     if (!src) return;
     if ($('#audioPlay').dataset.charge === langue) {
-      $('#audioPlay').textContent = pauseEnregistrement() ? '❚❚' : '▶';
+      pauseEnregistrement();
+      majLecteur();
       return;
     }
     $('#audioPlay').dataset.charge = langue;
-    jouerEnregistrement(src, { onend: () => ($('#audioPlay').textContent = '▶') });
+    jouerEnregistrement(src, { onend: majLecteur, onload: majLecteur });
     $('#audioPlay').textContent = '❚❚';
-    clearInterval(timerProgression);
-    timerProgression = setInterval(() => ($('#audioBarre').style.width = `${progressionEnregistrement() * 100}%`), 300);
+    suivreLecture();
   });
 
   function afficher(i, sens = 1) {
@@ -363,7 +444,7 @@ export async function pageConte(app, [id]) {
     if (enregistrement(conte.id, langue) && $('#audioPlay').dataset.charge !== langue) $('#audioPlay').click();
   }
   const premierGeste = (e) => {
-    if (e.target.closest('#audioPlay, #soundToggle, .langue')) return; // ces boutons gèrent déjà le son
+    if (e.target.closest('.lecteur-audio, #soundToggle, .langue')) return; // ces commandes gèrent déjà le son
     retirerAttente();
     demarrerAudio();
   };

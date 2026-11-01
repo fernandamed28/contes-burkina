@@ -231,10 +231,26 @@ body[data-page='carte'] .footer { display: none; }
 .langue.avenir { border-style: dashed; }
 .langue.actif { border-color: var(--c); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--c); }
 .note-langue { font-size: .9rem; margin: 0 0 12px; }
-.lecteur-audio { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--ligne); border-radius: 999px; padding: 6px 16px 6px 6px; margin-bottom: 12px; }
-.rond { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--ocre); color: var(--sur-ocre); font-size: 1rem; cursor: pointer; }
-.barre { flex: 1; height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
-.barre span { display: block; height: 100%; width: 0; background: var(--ocre); transition: width .3s linear; }
+.lecteur-audio { display: grid; gap: 10px; background: var(--surface); border: 1px solid var(--ligne); border-radius: 18px; padding: 10px 16px 10px 10px; margin-bottom: 12px; }
+.lecteur-ligne { display: flex; align-items: center; gap: 10px; }
+.lecteur-ligne.secondaire { flex-wrap: wrap; gap: 10px 16px; padding-left: 6px; }
+.rond { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; background: var(--ocre); color: var(--sur-ocre); font-size: 1rem; cursor: pointer; }
+.saut { flex: none; height: 34px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--ligne); background: var(--surface-2); color: var(--texte); font: 600 .8rem var(--sans); font-variant-numeric: tabular-nums; cursor: pointer; }
+.saut:hover { border-color: var(--ocre); color: var(--ocre); }
+/* barre de progression déplaçable (souris, doigt ou flèches du clavier) */
+.seek { --p: 0%; flex: 1; min-width: 80px; height: 22px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.seek::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--ocre) var(--p), var(--surface-2) var(--p)); }
+.seek::-moz-range-track { height: 6px; border-radius: 999px; background: var(--surface-2); }
+.seek::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--ocre); }
+.seek::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5px; border-radius: 50%; background: var(--ocre); border: 2px solid var(--texte); box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.seek::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--ocre); border: 2px solid var(--texte); }
+.seek:hover::-webkit-slider-thumb { transform: scale(1.15); }
+.temps { flex: none; font-variant-numeric: tabular-nums; font-size: .85rem; color: var(--muted); min-width: 78px; text-align: right; }
+.vitesses { display: flex; gap: 4px; margin-left: auto; }
+.vitesses button { border: 1px solid var(--ligne); background: transparent; color: var(--muted); border-radius: 999px; padding: 3px 9px; font: 600 .78rem var(--sans); cursor: pointer; }
+.vitesses button.actif { background: var(--ocre); border-color: var(--ocre); color: var(--sur-ocre); }
+.volume-voix { display: flex; align-items: center; gap: 6px; font-size: .9rem; }
+.volume-voix input { width: 90px; accent-color: var(--ocre); cursor: pointer; }
 .scene-cadre { position: relative; border-radius: var(--rayon); overflow: hidden; border: 1px solid var(--ligne); background: #000; }
 .scene { position: relative; aspect-ratio: 16 / 9; max-height: 56vh; width: 100%; overflow: hidden; }
 .scene-calque { position: absolute; inset: 0; }
@@ -449,8 +465,8 @@ blockquote { font: italic 1.2rem/1.5 var(--serif); border-left: 4px solid var(--
 @keyframes invite { 0%, 100% { box-shadow: 0 12px 30px rgba(0,0,0,.45), 0 0 0 0 rgba(224, 165, 38, .5); } 50% { box-shadow: 0 12px 30px rgba(0,0,0,.45), 0 0 0 12px rgba(224, 165, 38, 0); } }
 
 /* Crédits des voix */
-.audio-infos { display: flex; flex-direction: column; align-items: flex-end; text-align: right; color: var(--muted); font-size: .92rem; line-height: 1.3; }
+.audio-infos { display: flex; flex-direction: column; color: var(--muted); font-size: .92rem; line-height: 1.3; }
 .audio-infos small { color: var(--ocre); font-weight: 600; font-size: .8rem; }
 .credit-voix { margin: 0 0 16px; font-size: .9rem; color: var(--texte-2); }
 .credit-voix strong { color: var(--texte); }
-@media (max-width: 640px) { .lecteur-audio { flex-wrap: wrap; border-radius: 16px; } .audio-infos { width: 100%; align-items: flex-start; text-align: left; } }
+@media (max-width: 640px) { .temps { min-width: 0; font-size: .78rem; } .vitesses { margin-left: 0; } .audio-infos { width: 100%; } .volume-voix input { width: 70px; } }

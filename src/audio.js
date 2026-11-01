@@ -218,9 +218,21 @@ export function arreterNarration() {
 }
 
 /** Joue l'enregistrement complet d'un conte dans une langue. */
-export function jouerEnregistrement(src, { onend, onplay } = {}) {
+// Réglages du lecteur conservés d'un enregistrement à l'autre
+let vitesseLecture = 1;
+let volumeVoix = 1;
+
+export function jouerEnregistrement(src, { onend, onplay, onload } = {}) {
   arreterNarration();
-  howl = new Howl({ src: [src], html5: true, onplay, onend: () => { attenuerMusique(false); onend?.(); } });
+  howl = new Howl({
+    src: [src],
+    html5: true,
+    rate: vitesseLecture,
+    volume: volumeVoix,
+    onplay,
+    onload,
+    onend: () => { attenuerMusique(false); onend?.(); },
+  });
   howl.play();
   attenuerMusique(true);
   return howl;
@@ -236,9 +248,36 @@ export function pauseEnregistrement() {
 }
 
 export function progressionEnregistrement() {
-  if (!howl) return 0;
-  const d = howl.duration();
-  return d ? howl.seek() / d : 0;
+  const e = etatEnregistrement();
+  return e && e.duree ? e.position / e.duree : 0;
+}
+
+/** Position et durée (en secondes) de l'enregistrement en cours, ou null. */
+export function etatEnregistrement() {
+  if (!howl) return null;
+  const position = howl.seek();
+  return { position: typeof position === 'number' ? position : 0, duree: howl.duration() || 0, joue: howl.playing() };
+}
+
+/** Se place à un moment précis de l'enregistrement (en secondes). */
+export function allerA(secondes) {
+  const e = etatEnregistrement();
+  if (!e || !e.duree) return;
+  howl.seek(Math.max(0, Math.min(secondes, e.duree - 0.05)));
+}
+
+export function changerVitesse(vitesse) {
+  vitesseLecture = vitesse;
+  howl?.rate(vitesse);
+}
+
+export function changerVolumeVoix(volume) {
+  volumeVoix = volume;
+  howl?.volume(volume);
+}
+
+export function reglagesLecteur() {
+  return { vitesse: vitesseLecture, volume: volumeVoix };
 }
 
 export function syntheseDisponible() {
