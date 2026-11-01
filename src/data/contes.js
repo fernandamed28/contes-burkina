@@ -875,7 +875,7 @@ export const CONTES = [
       {
         id: 'fin',
         texte:
-          "Le soir, autour du feu, les vieux du Gulmu terminent ce conte en disant aux enfants : « La brousse donne à celui qui la respecte. Mais une parole donnée ne se reprend pas : celui qui la trahit perd tout ce qu'elle lui avait apporté. » Puis ils jettent une poignée de sable dans le feu, et chacun rentre dormir.",
+          "Ici s'arrête l'histoire de Yempabou. Et le conteur, avant que chacun rentre dormir, dit aux enfants assis autour du feu : « La brousse donne à celui qui la respecte. Mais une parole donnée ne se reprend pas : celui qui la trahit perd tout ce qu'elle lui avait apporté. »",
         ciel: 'nuit', sol: 'savane',
         decor: [['feu', 400], ['cases', 640], ['baobab', 120]],
         acteurs: [{ t: 'griot', x: 300 }, { t: 'foule', x: 500 }],
