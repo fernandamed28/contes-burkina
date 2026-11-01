@@ -1,6 +1,6 @@
 {
   "diaba-lompo": {
-    "fr": "diaba-lompo/fr.mp3",
-    "gulmancema": "diaba-lompo/gulmancema.mp3"
+    "gulmancema": { "fichier": "diaba-lompo/gulmancema.mp3", "voix": "TINDANO Fernand Amed", "duree": "1 min 29" },
+    "fr": { "fichier": "diaba-lompo/fr.mp3", "voix": "TINDANO Fernand Amed", "duree": "1 min 15" }
   }
 }
