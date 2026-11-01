@@ -71,10 +71,13 @@ export async function pageConte(app, [id]) {
 
     <div class="scene-cadre">
       <div class="scene" id="scene" aria-hidden="true"></div>
-      <button class="invite-ecoute" id="inviteEcoute" hidden>
-        <span class="invite-ico" aria-hidden="true">▶</span>
-        <span><strong id="inviteTitre">Écouter le récit</strong><small>Touchez pour lancer la voix et la musique</small></span>
-      </button>
+      <div class="invite-ecoute" id="inviteEcoute" hidden>
+        <button class="invite-principal" id="inviteLancer">
+          <span class="invite-ico" id="inviteIco" aria-hidden="true">▶</span>
+          <span><strong id="inviteTitre" aria-live="polite">Écouter le récit</strong><small id="inviteSous">Touchez pour lancer la voix et la musique</small></span>
+        </button>
+        <button class="invite-annuler" id="inviteAnnuler" aria-label="Annuler la lecture automatique" title="Annuler">✕</button>
+      </div>
       <div class="scene-texte" aria-live="polite">
         <p id="texte"></p>
         <div class="choix" id="choix"></div>
@@ -134,6 +137,8 @@ export async function pageConte(app, [id]) {
   app.querySelectorAll('.langue').forEach((b) =>
     b.addEventListener('click', () => {
       arreterNarration();
+      clearInterval(decompte); // choisir une langue lance la voix tout de suite
+      $('#inviteEcoute').hidden = true;
       langue = b.dataset.l;
       majLangues();
       // changer de langue lance directement la voix correspondante
@@ -435,36 +440,71 @@ export async function pageConte(app, [id]) {
   majLangues();
   afficher(0);
 
-  // Démarrage automatique : musique de fond et voix enregistrée dans la langue choisie.
-  // Les navigateurs refusent le son tant que le visiteur n'a pas touché la page :
-  // dans ce cas, une invitation s'affiche et le premier geste lance tout.
+  // Démarrage automatique : après un décompte de 3 secondes, la musique de fond et la voix
+  // enregistrée dans la langue choisie se lancent seules. Si le navigateur refuse le son
+  // (aucun geste encore fait sur la page), l'invitation reste et le premier toucher lance tout.
+  const invite = $('#inviteEcoute');
+  let decompte = null;
   function demarrerAudio() {
-    $('#inviteEcoute').hidden = true;
+    clearInterval(decompte);
+    invite.hidden = true;
     if (!ambianceActive() && !musiqueCoupeeParVisiteur()) demarrerAmbiance();
     if (enregistrement(conte.id, langue) && $('#audioPlay').dataset.charge !== langue) $('#audioPlay').click();
   }
   const premierGeste = (e) => {
-    if (e.target.closest('.lecteur-audio, #soundToggle, .langue')) return; // ces commandes gèrent déjà le son
+    if (e.target.closest('.lecteur-audio, #soundToggle, .langue, .invite-ecoute')) return; // ces commandes gèrent déjà le son
     retirerAttente();
     demarrerAudio();
   };
   const retirerAttente = () => ['pointerdown', 'keydown'].forEach((t) => document.removeEventListener(t, premierGeste, true));
-  const sonAutorise = navigator.userActivation ? navigator.userActivation.hasBeenActive : false;
-  if (sonAutorise) {
-    demarrerAudio();
-  } else {
-    if (enregistrement(conte.id, langue)) {
-      $('#inviteTitre').textContent = `Écouter le récit en ${LANGUES[langue]}`;
-      $('#inviteEcoute').hidden = false;
-    }
+  function attendreGeste() {
+    // le son a été refusé : on arrête la tentative et on attend un toucher
+    arreterNarration();
+    $('#audioPlay').dataset.charge = '';
+    $('#audioPlay').textContent = '▶';
+    $('#inviteIco').textContent = '▶';
+    $('#inviteTitre').textContent = `Écouter le récit en ${LANGUES[langue]}`;
+    $('#inviteSous').textContent = 'Votre navigateur demande un toucher pour lancer le son';
+    invite.classList.remove('compte');
+    invite.hidden = false;
     ['pointerdown', 'keydown'].forEach((t) => document.addEventListener(t, premierGeste, true));
   }
-  $('#inviteEcoute').addEventListener('click', () => {
+  function lancerDecompte() {
+    let reste = 3;
+    const afficher = () => {
+      $('#inviteIco').textContent = reste;
+      $('#inviteTitre').textContent = `Lecture dans ${reste} s…`;
+    };
+    $('#inviteSous').textContent = `Récit en ${LANGUES[langue]} · touchez pour lancer maintenant`;
+    invite.classList.add('compte');
+    invite.hidden = false;
+    afficher();
+    decompte = setInterval(() => {
+      reste -= 1;
+      if (reste > 0) return afficher();
+      clearInterval(decompte);
+      demarrerAudio();
+      // vérifie que la voix avance vraiment : un navigateur qui bloque le son laisse la position à 0
+      setTimeout(() => {
+        const e = etatEnregistrement();
+        if ($('#audioPlay').dataset.charge === langue && !(e && e.position > 0.3)) attendreGeste();
+      }, 1500);
+    }, 1000);
+  }
+  if (enregistrement(conte.id, langue)) lancerDecompte();
+  else if (navigator.userActivation?.hasBeenActive) demarrerAudio(); // pas de voix : seulement la musique
+  $('#inviteLancer').addEventListener('click', () => {
     retirerAttente();
     demarrerAudio();
   });
+  $('#inviteAnnuler').addEventListener('click', () => {
+    clearInterval(decompte);
+    retirerAttente();
+    invite.hidden = true;
+  });
 
   return () => {
+    clearInterval(decompte);
     retirerAttente();
     document.removeEventListener('keydown', onKey);
     clearInterval(timerProgression);

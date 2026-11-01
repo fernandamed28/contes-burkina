@@ -451,17 +451,23 @@ blockquote { font: italic 1.2rem/1.5 var(--serif); border-left: 4px solid var(--
 .badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .badges .badge-une { margin-left: 0; }
 
-/* Invitation à écouter quand le navigateur bloque le son au chargement */
+/* Invitation à écouter : décompte avant lecture automatique, ou demande d'un toucher si le son est bloqué */
 .invite-ecoute {
   position: absolute; z-index: 5; left: 50%; top: 42%; transform: translate(-50%, -50%);
-  display: flex; align-items: center; gap: 14px; padding: 14px 22px 14px 14px;
-  background: rgba(20, 13, 9, .82); color: #f3e6cf; border: 1px solid #e0a526; border-radius: 999px;
-  font: inherit; text-align: left; cursor: pointer; backdrop-filter: blur(6px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .45); animation: invite 2s ease-in-out infinite;
+  display: flex; align-items: center; gap: 6px; padding: 6px;
+  background: rgba(20, 13, 9, .82); border: 1px solid #e0a526; border-radius: 999px;
+  backdrop-filter: blur(6px); box-shadow: 0 12px 30px rgba(0, 0, 0, .45); animation: invite 2s ease-in-out infinite;
 }
-.invite-ecoute strong { display: block; font: 600 1.05rem var(--serif); }
-.invite-ecoute small { color: #d9c8ad; font-size: .82rem; }
-.invite-ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #e0a526; color: #1a110c; font-size: 1.2rem; padding-left: 3px; }
+.invite-principal { display: flex; align-items: center; gap: 14px; padding: 8px 14px 8px 8px; background: none; border: 0; color: #f3e6cf; font: inherit; text-align: left; cursor: pointer; }
+.invite-principal strong { display: block; font: 600 1.05rem var(--serif); }
+.invite-principal small { color: #d9c8ad; font-size: .82rem; }
+.invite-ico { display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 50%; background: #e0a526; color: #1a110c; font: 700 1.2rem var(--sans); font-variant-numeric: tabular-nums; }
+/* pendant le décompte, un anneau se vide autour du chiffre */
+.invite-ecoute.compte .invite-ico { background: radial-gradient(circle, #e0a526 0 60%, transparent 62%), conic-gradient(#f3e6cf var(--a, 100%), rgba(224, 165, 38, .25) 0); animation: anneau 1s linear infinite; }
+@keyframes anneau { from { --a: 100%; } to { --a: 0%; } }
+@property --a { syntax: '<percentage>'; inherits: false; initial-value: 100%; }
+.invite-annuler { width: 32px; height: 32px; flex: none; margin-right: 6px; border-radius: 50%; border: 1px solid rgba(243, 230, 207, .3); background: none; color: #d9c8ad; cursor: pointer; }
+.invite-annuler:hover { color: #f3e6cf; border-color: #f3e6cf; }
 @keyframes invite { 0%, 100% { box-shadow: 0 12px 30px rgba(0,0,0,.45), 0 0 0 0 rgba(224, 165, 38, .5); } 50% { box-shadow: 0 12px 30px rgba(0,0,0,.45), 0 0 0 12px rgba(224, 165, 38, 0); } }
 
 /* Crédits des voix */
