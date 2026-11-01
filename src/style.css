@@ -344,3 +344,48 @@ blockquote { font: italic 1.2rem/1.5 var(--serif); border-left: 4px solid var(--
 :root[data-theme='light'] .hero .sur-titre { color: #e0a526; }
 :root[data-theme='light'] .hero .btn.ghost { color: #f3e6cf; border-color: rgba(243, 230, 207, .5); }
 :root[data-theme='light'] .hero .btn:not(.ghost) { background: #e0a526; border-color: #e0a526; }
+
+/* Astuce de première visite (bouton musique) */
+.astuce {
+  position: fixed; z-index: 60; width: min(340px, calc(100vw - 24px));
+  background: var(--surface); color: var(--texte);
+  border: 1px solid var(--ocre); border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .45), 0 0 0 4px rgba(224, 165, 38, .12);
+  padding: 16px 16px 14px;
+  opacity: 0; transform: translateY(-10px) scale(.96); transform-origin: calc(var(--fleche, 300px)) 0;
+  transition: opacity .35s ease, transform .45s cubic-bezier(.2, 1.4, .4, 1);
+}
+.astuce.visible { opacity: 1; transform: none; }
+.astuce.visible:not(.pause) { animation: flotte 2.6s ease-in-out .6s infinite; }
+.astuce.sortie { opacity: 0; transform: translateY(-6px) scale(.97); transition-duration: .3s; }
+@keyframes flotte { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.astuce-fleche {
+  position: absolute; top: -8px; left: calc(var(--fleche, 300px) - 8px);
+  width: 16px; height: 16px; background: var(--surface);
+  border-left: 1px solid var(--ocre); border-top: 1px solid var(--ocre); transform: rotate(45deg);
+}
+.astuce-corps { display: flex; gap: 12px; align-items: flex-start; }
+.astuce-ico { flex: none; display: flex; align-items: flex-end; gap: 3px; width: 42px; height: 42px; padding: 11px 10px; border-radius: 50%; background: var(--ocre); color: var(--sur-ocre); }
+.astuce-ico i { flex: 1; height: 100%; border-radius: 2px; background: currentColor; transform-origin: bottom; animation: egaliseur .9s ease-in-out infinite; }
+.astuce-ico i:nth-child(2) { animation-delay: -.3s; }
+.astuce-ico i:nth-child(3) { animation-delay: -.6s; }
+.astuce-ico i:nth-child(4) { animation-delay: -.15s; }
+.astuce-titre { margin: 0 0 2px; font: 600 1.05rem var(--serif); }
+.astuce-texte { margin: 0; font-size: .92rem; color: var(--texte-2); line-height: 1.45; }
+.astuce-actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.astuce-actions .btn { padding: 8px 16px; font-size: .9rem; }
+.astuce-non { background: none; border: 0; color: var(--muted); font: 500 .9rem var(--sans); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.astuce-non:hover { color: var(--texte); }
+/* barre qui se vide : le temps restant avant la disparition */
+.astuce-temps { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--surface-2); border-radius: 0 0 16px 16px; overflow: hidden; }
+.astuce-temps span { display: block; height: 100%; background: var(--ocre); transform-origin: left; animation: temps linear forwards; }
+.astuce.pause .astuce-temps span { animation-play-state: paused; }
+@keyframes temps { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+/* le bouton visé est entouré d'ondes */
+.sound-toggle.repere { position: relative; border-color: var(--ocre); color: var(--ocre); }
+.sound-toggle.repere::before, .sound-toggle.repere::after {
+  content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--ocre);
+  animation: onde 1.8s ease-out infinite; pointer-events: none;
+}
+.sound-toggle.repere::after { animation-delay: .9s; }
+@keyframes onde { from { transform: scale(1); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }

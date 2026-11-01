@@ -3,6 +3,7 @@ import { pageAccueil, pageBibliotheque, pageParticiper, pageAPropos } from './pa
 import { pageCarte } from './pages/carte.js';
 import { pageConte } from './pages/conte.js';
 import { demarrerAmbiance, arreterAmbiance, ambianceActive } from './audio.js';
+import { astuceMusique } from './astuce.js';
 
 const ROUTES = {
   '': pageAccueil,
@@ -68,3 +69,5 @@ function majBoutonSon(actif) {
 majBoutonSon(false);
 window.addEventListener('ambiance', (e) => majBoutonSon(e.detail));
 son.addEventListener('click', () => (ambianceActive() ? arreterAmbiance() : demarrerAmbiance()));
+
+astuceMusique();
