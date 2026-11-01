@@ -5,9 +5,11 @@ import { Howl } from 'howler';
 const BASE = import.meta.env.BASE_URL;
 
 // ---------- Ambiance ----------
-// Musique de fond (kora de Ballaké Sissoko), volontairement discrète, plus encore pendant la narration
+// Musique de fond (kora de Ballaké Sissoko), volontairement discrète.
+// Pendant qu'une voix raconte, toute l'ambiance (musique, grillons, vent) descend à 50 % au plus.
 const VOLUME_MUSIQUE = 0.12;
-const VOLUME_MUSIQUE_NARRATION = 0.04;
+const ATTENUATION_NARRATION = 0.5;
+const VOLUME_BRUITAGES = 0.5;
 let musique = null;
 let ctx = null;
 let master = null;
@@ -93,7 +95,7 @@ export function demarrerAmbiance() {
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
-    master.gain.value = 0.5;
+    master.gain.value = lectureEnCours() ? VOLUME_BRUITAGES * ATTENUATION_NARRATION : VOLUME_BRUITAGES;
     master.connect(ctx.destination);
     vent();
   }
@@ -103,7 +105,9 @@ export function demarrerAmbiance() {
   if (!musique) {
     musique = new Howl({
       src: [`${BASE}audio/ambiance.mp3`],
-      html5: true,
+      // Web Audio et non <audio> : sur iPhone le volume d'un élément <audio> est ignoré,
+      // l'atténuation pendant la narration n'aurait donc aucun effet sur téléphone.
+      html5: false,
       loop: true,
       volume: 0,
       // Musique indisponible : on revient aux notes de balafon générées
@@ -111,11 +115,19 @@ export function demarrerAmbiance() {
     });
   }
   musique.play();
-  musique.fade(0, lectureEnCours() ? VOLUME_MUSIQUE_NARRATION : VOLUME_MUSIQUE, 2000);
+  musique.fade(0, volumeMusique(lectureEnCours()), 2000);
+}
+
+function volumeMusique(narration) {
+  return narration ? VOLUME_MUSIQUE * ATTENUATION_NARRATION : VOLUME_MUSIQUE;
 }
 
 function attenuerMusique(narration) {
-  if (musique?.playing()) musique.fade(musique.volume(), narration ? VOLUME_MUSIQUE_NARRATION : VOLUME_MUSIQUE, 600);
+  if (musique?.playing()) musique.fade(musique.volume(), volumeMusique(narration), 600);
+  if (master && ctx) {
+    const cible = narration ? VOLUME_BRUITAGES * ATTENUATION_NARRATION : VOLUME_BRUITAGES;
+    master.gain.setTargetAtTime(cible, ctx.currentTime, 0.2);
+  }
 }
 
 export function arreterAmbiance() {
