@@ -4,7 +4,7 @@ import { getConte, CONTES, CATEGORIES, LANGUES } from '../data/contes.js';
 import { renderScene, animateScene, killScene } from '../scenes.js';
 import {
   chargerManifest, enregistrement, languesEnregistrees, jouerEnregistrement, pauseEnregistrement, progressionEnregistrement,
-  arreterNarration, lireTexte, syntheseDisponible,
+  arreterNarration, lireTexte, syntheseDisponible, demarrerAmbiance, ambianceActive, musiqueCoupeeParVisiteur,
 } from '../audio.js';
 
 export async function pageConte(app, [id]) {
@@ -54,6 +54,10 @@ export async function pageConte(app, [id]) {
 
     <div class="scene-cadre">
       <div class="scene" id="scene" aria-hidden="true"></div>
+      <button class="invite-ecoute" id="inviteEcoute" hidden>
+        <span class="invite-ico" aria-hidden="true">▶</span>
+        <span><strong id="inviteTitre">Écouter le récit</strong><small>Touchez pour lancer la voix et la musique</small></span>
+      </button>
       <div class="scene-texte" aria-live="polite">
         <p id="texte"></p>
         <div class="choix" id="choix"></div>
@@ -109,6 +113,8 @@ export async function pageConte(app, [id]) {
       arreterNarration();
       langue = b.dataset.l;
       majLangues();
+      // changer de langue lance directement la voix correspondante
+      if (enregistrement(conte.id, langue)) $('#audioPlay').click();
     }),
   );
 
@@ -342,7 +348,37 @@ export async function pageConte(app, [id]) {
   majLangues();
   afficher(0);
 
+  // Démarrage automatique : musique de fond et voix enregistrée dans la langue choisie.
+  // Les navigateurs refusent le son tant que le visiteur n'a pas touché la page :
+  // dans ce cas, une invitation s'affiche et le premier geste lance tout.
+  function demarrerAudio() {
+    $('#inviteEcoute').hidden = true;
+    if (!ambianceActive() && !musiqueCoupeeParVisiteur()) demarrerAmbiance();
+    if (enregistrement(conte.id, langue) && $('#audioPlay').dataset.charge !== langue) $('#audioPlay').click();
+  }
+  const premierGeste = (e) => {
+    if (e.target.closest('#audioPlay, #soundToggle, .langue')) return; // ces boutons gèrent déjà le son
+    retirerAttente();
+    demarrerAudio();
+  };
+  const retirerAttente = () => ['pointerdown', 'keydown'].forEach((t) => document.removeEventListener(t, premierGeste, true));
+  const sonAutorise = navigator.userActivation ? navigator.userActivation.hasBeenActive : false;
+  if (sonAutorise) {
+    demarrerAudio();
+  } else {
+    if (enregistrement(conte.id, langue)) {
+      $('#inviteTitre').textContent = `Écouter le récit en ${LANGUES[langue]}`;
+      $('#inviteEcoute').hidden = false;
+    }
+    ['pointerdown', 'keydown'].forEach((t) => document.addEventListener(t, premierGeste, true));
+  }
+  $('#inviteEcoute').addEventListener('click', () => {
+    retirerAttente();
+    demarrerAudio();
+  });
+
   return () => {
+    retirerAttente();
     document.removeEventListener('keydown', onKey);
     clearInterval(timerProgression);
     arreterNarration();

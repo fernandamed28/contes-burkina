@@ -81,6 +81,22 @@ function balafon() {
 // L'ambiance est toujours coupée à l'arrivée sur le site.
 let actif = false;
 
+// Si le visiteur a coupé la musique lui-même, on ne la relance plus automatiquement (pour cette visite).
+export function musiqueCoupeeParVisiteur() {
+  try {
+    return sessionStorage.getItem('musique-coupee') === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function memoriserChoixMusique(coupee) {
+  try {
+    if (coupee) sessionStorage.setItem('musique-coupee', '1');
+    else sessionStorage.removeItem('musique-coupee');
+  } catch {}
+}
+
 export function ambianceActive() {
   return actif;
 }

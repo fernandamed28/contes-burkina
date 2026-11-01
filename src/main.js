@@ -2,7 +2,7 @@ import './style.css';
 import { pageAccueil, pageBibliotheque, pageParticiper, pageAPropos } from './pages/pages.js';
 import { pageCarte } from './pages/carte.js';
 import { pageConte } from './pages/conte.js';
-import { demarrerAmbiance, arreterAmbiance, ambianceActive } from './audio.js';
+import { demarrerAmbiance, arreterAmbiance, ambianceActive, memoriserChoixMusique } from './audio.js';
 import { astuceMusique } from './astuce.js';
 
 const ROUTES = {
@@ -68,6 +68,11 @@ function majBoutonSon(actif) {
 }
 majBoutonSon(false);
 window.addEventListener('ambiance', (e) => majBoutonSon(e.detail));
-son.addEventListener('click', () => (ambianceActive() ? arreterAmbiance() : demarrerAmbiance()));
+son.addEventListener('click', () => {
+  const couper = ambianceActive();
+  memoriserChoixMusique(couper);
+  if (couper) arreterAmbiance();
+  else demarrerAmbiance();
+});
 
 astuceMusique();
