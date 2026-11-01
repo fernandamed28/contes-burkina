@@ -13,8 +13,8 @@ export function pageAccueil(app) {
     <div class="hero-scene" id="heroScene" aria-hidden="true"></div>
     <div class="hero-contenu">
       <p class="sur-titre">Patrimoine oral du Burkina Faso</p>
-      <h1>« Quand un vieillard meurt,<br/>c'est une bibliothèque qui brûle. »</h1>
-      <p class="citation">— Amadou Hampâté Bâ</p>
+      <h1>« Si nous nous couchons,<br/>nous sommes morts. »</h1>
+      <p class="citation">— Joseph Ki-Zerbo, historien burkinabè</p>
       <p class="intro">Approche-toi du feu. Parcours le pays sur la carte, écoute les contes, les légendes et les récits historiques racontés dans les langues nationales, et choisis toi-même la suite de certaines histoires.</p>
       <div class="actions">
         <button class="btn grand" id="entrer">Entrer dans la veillée ♪</button>

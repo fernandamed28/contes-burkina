@@ -138,8 +138,8 @@ export const CONTES = [
         texte:
           "Il vit alors un crocodile qui le regardait. L'animal ne l'attaqua pas : il fit demi-tour, avança de quelques pas, puis s'arrêta pour l'attendre. Le chasseur trouva la force de le suivre.",
         ciel: 'jour', sol: 'sable',
-        decor: [['rochers', 650]],
-        acteurs: [{ t: 'crocodile', x: 300, vers: 600 }, { t: 'chasseur', x: 120, vers: 420 }],
+        decor: [['arbre-mort', 720]],
+        acteurs: [{ t: 'crocodile', x: 300, vers: 560 }, { t: 'chasseur', x: 100, vers: 360 }],
         choix: [
           { label: 'Suivre le crocodile', vers: 'mare' },
           { label: 'Fuir l’animal', vers: 'fuir' },
