@@ -23,7 +23,7 @@ npm run dev
    ```json
    { "yennenga": { "moore": "yennenga/moore.mp3" } }
    ```
-3. Publier avec `npm run deploy` (construit le site et le pousse sur la branche `gh-pages`).
+3. Publier avec `npm run deploy` (construit le site et le pousse sur la branche `gh-pages`). Les anciens fichiers `assets/` sont conservés (`--add`) : un visiteur dont le navigateur a gardé une ancienne page en cache ne tombe pas sur une page sans style.
 
 ## Ajouter un récit
 Ajouter une entrée dans `src/data/contes.js` (texte découpé en scènes, décor, personnages, choix éventuels).

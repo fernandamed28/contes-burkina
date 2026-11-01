@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist --dotfiles -m \"Publication du site\""
+    "deploy": "vite build && gh-pages -d dist --dotfiles --add -m \"Publication du site\""
   },
   "keywords": [],
   "author": "",
