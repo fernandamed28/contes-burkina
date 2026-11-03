@@ -105,80 +105,6 @@ export const CONTES = [
   },
 
   {
-    id: 'crocodiles-sabou',
-    titre: 'Les crocodiles sacrés de Sabou',
-    categorie: 'legende',
-    peuple: 'Moose (Mossi)',
-    langues: ['fr', 'moore', 'dioula', 'fulfulde'],
-    lieu: 'Sabou',
-    region: 'Centre-Ouest',
-    coords: [-2.2333, 12.0667],
-    duree: 4,
-    resume:
-      "Perdu en pleine saison sèche, un chasseur est sauvé par un crocodile qui le guide jusqu'à l'eau. Depuis, à Sabou, les crocodiles de la mare ne sont jamais chassés.",
-    morale: "La reconnaissance unit les hommes et les animaux. Le pacte protège encore aujourd'hui les crocodiles de la mare.",
-    source:
-      "Tradition orale du village de Sabou (province du Boulkiemdé). Plusieurs versions existent : on présente ici la plus répandue.",
-    scenes: [
-      {
-        texte:
-          "C'était au cœur d'une saison sèche terrible, comme les anciens n'en avaient jamais connu. Les mares étaient vides, les puits ne donnaient plus que de la boue et la terre se fendait sous le soleil. Pour nourrir sa famille, un chasseur de la région de Sabou partit en brousse à la poursuite d'une antilope. Il la suivit si loin, de buisson en buisson, qu'il perdit de vue tous les repères qu'il connaissait.",
-        ciel: 'secheresse', sol: 'sable',
-        decor: [['arbre-mort', 600], ['rochers', 200]],
-        acteurs: [{ t: 'chasseur', x: 80, vers: 360 }],
-      },
-      {
-        texte:
-          "Il marcha pendant trois jours sous un soleil brûlant. Sa gourde était vide depuis longtemps, ses lèvres étaient fendues et ses jambes ne le portaient plus. Le soir du troisième jour, il s'écroula à l'ombre d'un arbre mort. « C'est ici que je vais mourir, pensa-t-il, loin des miens, sans que personne ne sache où me trouver. » Il ferma les yeux et attendit.",
-        ciel: 'secheresse', sol: 'sable',
-        decor: [['arbre-mort', 420]],
-        acteurs: [{ t: 'chasseur', x: 380 }],
-      },
-      {
-        texte:
-          "Un bruit léger le réveilla. À quelques pas de lui, un grand crocodile le regardait, immobile. Le chasseur saisit son arc, mais il n'avait plus la force de le tendre. Étrangement, l'animal ne l'attaqua pas. Il fit demi-tour, avança de quelques pas, puis s'arrêta et tourna la tête vers lui, comme pour l'attendre. Le chasseur comprit que le crocodile voulait lui montrer quelque chose.",
-        ciel: 'jour', sol: 'sable',
-        decor: [['arbre-mort', 720]],
-        acteurs: [{ t: 'crocodile', x: 300, vers: 560 }, { t: 'chasseur', x: 100, vers: 360 }],
-        choix: [
-          { label: 'Suivre le crocodile', vers: 'mare' },
-          { label: 'Fuir l’animal', vers: 'fuir' },
-        ],
-      },
-      {
-        id: 'fuir',
-        texte:
-          "Le chasseur eut peur et voulut s'enfuir dans la direction opposée, mais il était trop faible : il tomba après quelques pas. Le crocodile revint vers lui, lentement, et s'arrêta encore à quelque distance, patient. Alors l'homme comprit qu'il n'avait rien à craindre. Il rassembla ses dernières forces et se mit à le suivre.",
-        ciel: 'jour', sol: 'sable',
-        decor: [['arbre-mort', 200]],
-        acteurs: [{ t: 'crocodile', x: 500 }, { t: 'chasseur', x: 260 }],
-        suite: 'mare',
-      },
-      {
-        id: 'mare',
-        texte:
-          "Le crocodile le mena entre les rochers jusqu'à une mare cachée, que la sécheresse avait épargnée. L'eau y était fraîche et claire. Le chasseur s'agenouilla et but longuement, puis s'aspergea le visage. Il remercia l'animal, qui s'était glissé dans l'eau et le regardait, seuls ses yeux dépassant de la surface. Le lendemain, reposé, le chasseur retrouva le chemin de son village.",
-        ciel: 'jour', sol: 'savane',
-        decor: [['mare', 420], ['arbre', 680], ['rochers', 120]],
-        acteurs: [{ t: 'crocodile', x: 470 }, { t: 'chasseur', x: 300 }],
-      },
-      {
-        texte:
-          "De retour à Sabou, il raconta son aventure devant les anciens réunis. Il leur fit jurer que jamais personne, ni eux ni leurs descendants, ne ferait de mal aux crocodiles de la mare. Les villageois s'installèrent près de l'eau, et le pacte se transmit de génération en génération. Aujourd'hui encore, on dit que les crocodiles de Sabou vivent en paix avec les habitants, et que les enfants peuvent s'en approcher sans crainte. On raconte même que, lorsqu'un vieux crocodile meurt, on l'enterre avec respect, comme un membre de la communauté.",
-        ciel: 'crepuscule', sol: 'savane',
-        decor: [['mare', 520], ['cases', 160]],
-        acteurs: [{ t: 'crocodile', x: 560 }, { t: 'crocodile', x: 420 }, { t: 'foule', x: 160 }],
-        fin: true,
-      },
-    ],
-    quiz: {
-      question: 'Pourquoi les crocodiles de Sabou sont-ils protégés ?',
-      reponses: ['Un crocodile a sauvé un chasseur', 'Ils gardent un trésor', 'Ils ont été offerts par un roi'],
-      bonne: 0,
-    },
-  },
-
-  {
     id: 'soamba-katr',
     titre: 'Soamba le lièvre et Katr la hyène',
     categorie: 'conte',
@@ -250,6 +176,80 @@ export const CONTES = [
     quiz: {
       question: 'Quel est le défaut de Katr la hyène dans ce conte ?',
       reponses: ['La gourmandise et l’égoïsme', 'La paresse', 'La timidité'],
+      bonne: 0,
+    },
+  },
+
+  {
+    id: 'crocodiles-sabou',
+    titre: 'Les crocodiles sacrés de Sabou',
+    categorie: 'legende',
+    peuple: 'Moose (Mossi)',
+    langues: ['fr', 'moore', 'dioula', 'fulfulde'],
+    lieu: 'Sabou',
+    region: 'Centre-Ouest',
+    coords: [-2.2333, 12.0667],
+    duree: 4,
+    resume:
+      "Perdu en pleine saison sèche, un chasseur est sauvé par un crocodile qui le guide jusqu'à l'eau. Depuis, à Sabou, les crocodiles de la mare ne sont jamais chassés.",
+    morale: "La reconnaissance unit les hommes et les animaux. Le pacte protège encore aujourd'hui les crocodiles de la mare.",
+    source:
+      "Tradition orale du village de Sabou (province du Boulkiemdé). Plusieurs versions existent : on présente ici la plus répandue.",
+    scenes: [
+      {
+        texte:
+          "C'était au cœur d'une saison sèche terrible, comme les anciens n'en avaient jamais connu. Les mares étaient vides, les puits ne donnaient plus que de la boue et la terre se fendait sous le soleil. Pour nourrir sa famille, un chasseur de la région de Sabou partit en brousse à la poursuite d'une antilope. Il la suivit si loin, de buisson en buisson, qu'il perdit de vue tous les repères qu'il connaissait.",
+        ciel: 'secheresse', sol: 'sable',
+        decor: [['arbre-mort', 600], ['rochers', 200]],
+        acteurs: [{ t: 'chasseur', x: 80, vers: 360 }],
+      },
+      {
+        texte:
+          "Il marcha pendant trois jours sous un soleil brûlant. Sa gourde était vide depuis longtemps, ses lèvres étaient fendues et ses jambes ne le portaient plus. Le soir du troisième jour, il s'écroula à l'ombre d'un arbre mort. « C'est ici que je vais mourir, pensa-t-il, loin des miens, sans que personne ne sache où me trouver. » Il ferma les yeux et attendit.",
+        ciel: 'secheresse', sol: 'sable',
+        decor: [['arbre-mort', 420]],
+        acteurs: [{ t: 'chasseur', x: 380 }],
+      },
+      {
+        texte:
+          "Un bruit léger le réveilla. À quelques pas de lui, un grand crocodile le regardait, immobile. Le chasseur saisit son arc, mais il n'avait plus la force de le tendre. Étrangement, l'animal ne l'attaqua pas. Il fit demi-tour, avança de quelques pas, puis s'arrêta et tourna la tête vers lui, comme pour l'attendre. Le chasseur comprit que le crocodile voulait lui montrer quelque chose.",
+        ciel: 'jour', sol: 'sable',
+        decor: [['arbre-mort', 720]],
+        acteurs: [{ t: 'crocodile', x: 300, vers: 560 }, { t: 'chasseur', x: 100, vers: 360 }],
+        choix: [
+          { label: 'Suivre le crocodile', vers: 'mare' },
+          { label: 'Fuir l’animal', vers: 'fuir' },
+        ],
+      },
+      {
+        id: 'fuir',
+        texte:
+          "Le chasseur eut peur et voulut s'enfuir dans la direction opposée, mais il était trop faible : il tomba après quelques pas. Le crocodile revint vers lui, lentement, et s'arrêta encore à quelque distance, patient. Alors l'homme comprit qu'il n'avait rien à craindre. Il rassembla ses dernières forces et se mit à le suivre.",
+        ciel: 'jour', sol: 'sable',
+        decor: [['arbre-mort', 200]],
+        acteurs: [{ t: 'crocodile', x: 500 }, { t: 'chasseur', x: 260 }],
+        suite: 'mare',
+      },
+      {
+        id: 'mare',
+        texte:
+          "Le crocodile le mena entre les rochers jusqu'à une mare cachée, que la sécheresse avait épargnée. L'eau y était fraîche et claire. Le chasseur s'agenouilla et but longuement, puis s'aspergea le visage. Il remercia l'animal, qui s'était glissé dans l'eau et le regardait, seuls ses yeux dépassant de la surface. Le lendemain, reposé, le chasseur retrouva le chemin de son village.",
+        ciel: 'jour', sol: 'savane',
+        decor: [['mare', 420], ['arbre', 680], ['rochers', 120]],
+        acteurs: [{ t: 'crocodile', x: 470 }, { t: 'chasseur', x: 300 }],
+      },
+      {
+        texte:
+          "De retour à Sabou, il raconta son aventure devant les anciens réunis. Il leur fit jurer que jamais personne, ni eux ni leurs descendants, ne ferait de mal aux crocodiles de la mare. Les villageois s'installèrent près de l'eau, et le pacte se transmit de génération en génération. Aujourd'hui encore, on dit que les crocodiles de Sabou vivent en paix avec les habitants, et que les enfants peuvent s'en approcher sans crainte. On raconte même que, lorsqu'un vieux crocodile meurt, on l'enterre avec respect, comme un membre de la communauté.",
+        ciel: 'crepuscule', sol: 'savane',
+        decor: [['mare', 520], ['cases', 160]],
+        acteurs: [{ t: 'crocodile', x: 560 }, { t: 'crocodile', x: 420 }, { t: 'foule', x: 160 }],
+        fin: true,
+      },
+    ],
+    quiz: {
+      question: 'Pourquoi les crocodiles de Sabou sont-ils protégés ?',
+      reponses: ['Un crocodile a sauvé un chasseur', 'Ils gardent un trésor', 'Ils ont été offerts par un roi'],
       bonne: 0,
     },
   },
