@@ -46,7 +46,11 @@ export async function pageAccueil(app) {
         <button class="btn grand" id="entrer">Entrer dans la veillée ♪</button>
         <a class="btn ghost grand" href="#/carte">Ouvrir la carte</a>
       </div>
-      <a class="hero-une" href="#/conte/${CONTE_UNE.id}"><span>★ À la une</span> ${CONTE_UNE.titre}, raconté en ${languesEnregistrees(CONTE_UNE.id).map((l) => LANGUES[l]).join(' et ') || 'français'} →</a>
+      <a class="hero-une" href="#/conte/${CONTE_UNE.id}">
+        <span class="hero-une-badge">★ À la une</span>
+        <span class="hero-une-texte"><strong>${CONTE_UNE.titre}</strong><small>🎧 Raconté en ${languesEnregistrees(CONTE_UNE.id).map((l) => LANGUES[l]).join(' et ') || 'français'}</small></span>
+        <span class="hero-une-fleche" aria-hidden="true">→</span>
+      </a>
     </div>
   </section>
 

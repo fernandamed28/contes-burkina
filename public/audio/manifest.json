@@ -2,5 +2,11 @@
   "diaba-lompo": {
     "gulmancema": { "fichier": "diaba-lompo/gulmancema.mp3", "voix": "TINDANO Fernand Amed", "duree": "1 min 29" },
     "fr": { "fichier": "diaba-lompo/fr.mp3", "voix": "TINDANO Fernand Amed", "duree": "1 min 15" }
+  },
+  "yennenga": {
+    "moore": { "fichier": "yennenga/moore.mp3", "duree": "10 min", "complet": true, "musique": true }
+  },
+  "soamba-katr": {
+    "moore": { "fichier": "soamba-katr/moore.mp3", "duree": "4 min 24", "complet": true }
   }
 }

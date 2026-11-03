@@ -45,7 +45,7 @@ export async function pageConte(app, [id]) {
           const d = detailsEnregistrement(conte.id, l);
           const bulle = d?.voix ? ` title="Voix de ${d.voix}${d.duree ? ` · ${d.duree}` : ''}"` : '';
           return `<button role="radio" data-l="${l}" class="langue ${dispo ? '' : 'avenir'}" aria-checked="false"${bulle}>
-            ${LANGUES[l]}${l === 'fr' && !enregistrement(conte.id, 'fr') ? ' <small>(synthèse)</small>' : dispo ? ' <small>♪ extrait</small>' : ' <small>à venir</small>'}</button>`;
+            ${LANGUES[l]}${l === 'fr' && !enregistrement(conte.id, 'fr') ? ' <small>(synthèse)</small>' : dispo ? ` <small>♪ ${detailsEnregistrement(conte.id, l)?.complet ? 'complet' : 'extrait'}</small>` : ' <small>à venir</small>'}</button>`;
         })
         .join('')}
     </div>
@@ -123,14 +123,14 @@ export async function pageConte(app, [id]) {
       note.innerHTML = `L'extrait audio en <strong>${LANGUES[langue]}</strong> n'est pas encore disponible. Tu peux <a href="#/participer">raconter ce conte dans ta langue</a> ! En attendant, le texte reste en français.`;
     } else note.hidden = true;
     if (src) {
-      $('#audioLabel').textContent = `Début du récit raconté en ${LANGUES[langue]}`;
       const d = detailsEnregistrement(conte.id, langue);
+      $('#audioLabel').textContent = `${d?.complet ? 'Récit complet' : 'Début du récit'} raconté en ${LANGUES[langue]}${d?.musique ? ', avec musique' : ''}`;
       $('#audioVoix').textContent = [d?.voix && `🎙️ Voix de ${d.voix}`, d?.duree].filter(Boolean).join(' · ');
       $('#audioPlay').textContent = '▶';
       $('#audioSeek').value = 0;
       $('#audioSeek').style.setProperty('--p', '0%');
       $('#audioTemps').textContent = '0:00';
-      $('#audioDuree').textContent = detailsEnregistrement(conte.id, langue)?.duree?.replace(/(\d+) min (\d+)/, (m, a, b) => `${a}:${b.padStart(2, '0')}`) || '0:00';
+      $('#audioDuree').textContent = detailsEnregistrement(conte.id, langue)?.duree?.replace(/(\d+) min(?: (\d+))?/, (m, a, b) => `${a}:${(b || '0').padStart(2, '0')}`) || '0:00';
     }
   }
 
@@ -218,7 +218,7 @@ export async function pageConte(app, [id]) {
       return;
     }
     $('#audioPlay').dataset.charge = langue;
-    jouerEnregistrement(src, { onend: majLecteur, onload: majLecteur });
+    jouerEnregistrement(src, { onend: majLecteur, onload: majLecteur, avecMusique: !!detailsEnregistrement(conte.id, langue)?.musique });
     $('#audioPlay').textContent = '❚❚';
     suivreLecture();
   });

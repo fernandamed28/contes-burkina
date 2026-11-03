@@ -5,9 +5,10 @@ import { Howl } from 'howler';
 const BASE = import.meta.env.BASE_URL;
 
 // ---------- Ambiance ----------
-// Musique de fond (kora de Ballaké Sissoko), volontairement discrète.
-// Pendant qu'une voix raconte, toute l'ambiance (musique, grillons, vent) descend à 50 % au plus.
-const VOLUME_MUSIQUE = 0.12;
+// Musique de fond (kora de Ballaké Sissoko) à 70 %.
+// Pendant qu'une voix raconte, toute l'ambiance (musique, grillons, vent) descend à 50 % au plus ;
+// si l'enregistrement contient déjà sa propre musique, la kora se tait pour ne pas se superposer.
+const VOLUME_MUSIQUE = 0.7;
 const ATTENUATION_NARRATION = 0.5;
 const VOLUME_BRUITAGES = 0.5;
 let musique = null;
@@ -130,12 +131,17 @@ export function demarrerAmbiance() {
       onloaderror: () => timers.push(setInterval(() => Math.random() < 0.6 && balafon(), 1600)),
     });
   }
+  // la montée de volume part du vrai démarrage (le fichier peut mettre un moment à se charger),
+  // avec le niveau qui convient à cet instant : voix en cours ou non
+  musique.once('play', () => musique.fade(0, volumeMusique(lectureEnCours()), 2000));
+  musique.volume(0);
   musique.play();
-  musique.fade(0, volumeMusique(lectureEnCours()), 2000);
 }
 
+let musiqueDansVoix = false;
 function volumeMusique(narration) {
-  return narration ? VOLUME_MUSIQUE * ATTENUATION_NARRATION : VOLUME_MUSIQUE;
+  if (!narration) return VOLUME_MUSIQUE;
+  return musiqueDansVoix ? 0 : VOLUME_MUSIQUE * ATTENUATION_NARRATION;
 }
 
 function attenuerMusique(narration) {
@@ -187,7 +193,7 @@ export function enregistrement(conteId, langue) {
 /** Détails d'un enregistrement : nom du conteur et durée, s'ils sont renseignés. */
 export function detailsEnregistrement(conteId, langue) {
   const e = entree(conteId, langue);
-  return e ? { voix: e.voix || '', duree: e.duree || '' } : null;
+  return e ? { voix: e.voix || '', duree: e.duree || '', complet: !!e.complet, musique: !!e.musique } : null;
 }
 
 /** Conteurs d'un récit, avec les langues de chacun : [{ voix, langues: [...] }]. */
@@ -222,8 +228,9 @@ export function arreterNarration() {
 let vitesseLecture = 1;
 let volumeVoix = 1;
 
-export function jouerEnregistrement(src, { onend, onplay, onload } = {}) {
+export function jouerEnregistrement(src, { onend, onplay, onload, avecMusique = false } = {}) {
   arreterNarration();
+  musiqueDansVoix = avecMusique;
   howl = new Howl({
     src: [src],
     html5: true,
