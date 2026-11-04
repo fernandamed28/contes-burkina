@@ -5,6 +5,10 @@ Projet du module Web Multimédia, Master SI, Groupe 13 (2026).
 
 **Site en ligne :** https://fernandamed28.github.io/contes-burkina/
 
+## Équipe — Groupe 13
+<!-- Chaque membre ajoute sa ligne ci-dessous : NOM Prénom (filière) — rôle dans le projet -->
+- TINDANO Fernand Amed (SI) — coordination, conception et développement, déploiement, rapport ; voix de « Diaba Lompo » en gulmancema et en français
+
 ## Fonctionnalités
 - Carte interactive 2D/3D (MapLibre GL) : régions, récits géolocalisés, filtres, relief.
 - Lecteur narratif : scènes illustrées en SVG animées (GSAP), choix interactifs, quiz.
