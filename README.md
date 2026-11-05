@@ -9,6 +9,7 @@ Projet du module Web Multimédia, Master SI, Groupe 13 (2026).
 <!-- Chaque membre ajoute sa ligne ci-dessous : NOM Prénom (filière) — rôle dans le projet -->
 - TINDANO Fernand Amed (SI) — coordination, conception et développement, déploiement, rapport ; voix de « Diaba Lompo » en gulmancema et en français
 - TEGA P.S Lareine (SIE) 
+- OUEDRAOGO Adama (SIE) — relecture et validation des récits ; recherche et collecte des enregistrements en langues nationales
 
 ## Fonctionnalités
 - Carte interactive 2D/3D (MapLibre GL) : régions, récits géolocalisés, filtres, relief.
